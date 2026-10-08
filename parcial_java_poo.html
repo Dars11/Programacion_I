@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parcial Java POO</title>
+<!--
+  PARCIAL INTERACTIVO · Fundamentos de Java, clases y objetos
+  ------------------------------------------------------------
+  - Ajustes rápidos: objeto CONFIG al inicio del <script> principal.
+  - Para borrar un intento guardado en un equipo (por ejemplo, después de probarlo),
+    abre el archivo agregando #reiniciar al final de la URL.
+  - Las respuestas se guardan en el navegador del estudiante (localStorage) y se
+    entregan como PDF descargable.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Identidad: verde institucional como color de acción; cada tipo de pregunta tiene su color (SM azul, CC naranja, EC morado);
+   una franja con toda la paleta funciona como sello de marca en encabezados, modales y PDF.
+   Layout: portada con banda verde y mosaico geométrico, luego barra fija + índice de preguntas + tarjeta de pregunta. */
+:root{
+  /* Paleta institucional */
+  --verde:#508C46; --turquesa:#16BAAF; --azul:#08AFE6; --morado:#6752A0; --naranja:#F89F32;
+  --amarillo:#FFCC29; --fucsia:#E22F6B; --rosa:#EE4884; --lila:#906AAC;
+  --verde-claro:#A3BD7C; --verde-agua:#7FCCC0; --azul-claro:#69CBE1; --naranja-2:#F89F1E;
+
+  /* Tokens de interfaz */
+  --bg:#f3f6f1; --surface:#ffffff; --surface-2:#f6f9f4; --ink:#1d2a1f; --muted:#5d6b5f; --line:#dbe3d6;
+  --primary:#508C46; --primary-ink:#ffffff; --primary-strong:#3e7135; --primary-soft:#e8f1e4;
+  --ok:#3e7135; --ok-soft:#e5f0de; --warn:#8a4e00; --warn-soft:#fff1d6; --bad:#c41f57; --bad-soft:#fde6ee;
+  --c-mcq:#08AFE6; --c-mcq-ink:#03729a; --c-mcq-soft:#e1f5fc;
+  --c-fill:#F89F32; --c-fill-ink:#995300; --c-fill-soft:#fff0dc;
+  --c-code:#6752A0; --c-code-ink:#5a4790; --c-code-soft:#eeeaf6;
+  --code-bg:#1c231e; --code-head:#252e27; --code-ink:#d4dccf; --code-line:#334036; --code-muted:#77857a;
+  --t-kw:#F89F32; --t-str:#A3BD7C; --t-num:#69CBE1; --t-com:#7d8b80; --t-cl:#FFCC29;
+  --stripe:linear-gradient(90deg,#508C46 0 14%,#16BAAF 14% 26%,#08AFE6 26% 40%,#6752A0 40% 54%,#F89F32 54% 66%,#FFCC29 66% 76%,#E22F6B 76% 88%,#906AAC 88% 100%);
+  --f-display:"Lexend", "Segoe UI", system-ui, sans-serif;
+  --f-sans:"Source Sans 3", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+  --r:12px; --shadow:0 1px 2px rgba(29,42,31,.06), 0 8px 24px rgba(29,42,31,.07);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101611; --surface:#172019; --surface-2:#1c271e; --ink:#e7eee4; --muted:#9daf9f; --line:#2b382d;
+    --primary:#5c9f51; --primary-ink:#ffffff; --primary-strong:#8cc47f; --primary-soft:#1d2e1d;
+    --ok:#9fd08f; --ok-soft:#1c2f1c; --warn:#ffc96b; --warn-soft:#33270f; --bad:#ff7aa3; --bad-soft:#3a1622;
+    --c-mcq-ink:#69CBE1; --c-mcq-soft:#0f2a33; --c-fill-ink:#F89F32; --c-fill-soft:#33240f; --c-code-ink:#b39ad6; --c-code-soft:#251f36;
+    --code-bg:#0d120e; --code-head:#151c16; --code-line:#253027;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101611; --surface:#172019; --surface-2:#1c271e; --ink:#e7eee4; --muted:#9daf9f; --line:#2b382d;
+  --primary:#5c9f51; --primary-ink:#ffffff; --primary-strong:#8cc47f; --primary-soft:#1d2e1d;
+  --ok:#9fd08f; --ok-soft:#1c2f1c; --warn:#ffc96b; --warn-soft:#33270f; --bad:#ff7aa3; --bad-soft:#3a1622;
+  --c-mcq-ink:#69CBE1; --c-mcq-soft:#0f2a33; --c-fill-ink:#F89F32; --c-fill-soft:#33240f; --c-code-ink:#b39ad6; --c-code-soft:#251f36;
+  --code-bg:#0d120e; --code-head:#151c16; --code-line:#253027;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-sans);}
+[hidden]{display:none!important}
+button,input,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
+code{font-family:var(--f-mono);font-size:.84em;background:var(--surface-2);border:1px solid var(--line);padding:.05em .35em;border-radius:5px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--turquesa);outline-offset:2px}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:16px}
+.stripe{height:6px;background:var(--stripe)}
+
+/* Colores por tipo de pregunta */
+.t-mcq{--c:var(--c-mcq);--c-ink:var(--c-mcq-ink);--c-soft:var(--c-mcq-soft)}
+.t-fill{--c:var(--c-fill);--c-ink:var(--c-fill-ink);--c-soft:var(--c-fill-soft)}
+.t-code{--c:var(--c-code);--c-ink:var(--c-code-ink);--c-soft:var(--c-code-soft)}
+
+/* ---------- Botones ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;border:2px solid var(--line);background:var(--surface);
+  padding:.6em 1.15em;border-radius:999px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s,transform .05s,box-shadow .15s}
+.btn:hover{border-color:var(--primary)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;border-color:var(--line)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:var(--primary-ink);box-shadow:0 3px 0 var(--primary-strong)}
+.btn-primary:hover{background:var(--primary-strong);border-color:var(--primary-strong)}
+.btn-primary:active{box-shadow:0 1px 0 var(--primary-strong)}
+.btn-lg{padding:.8em 1.6em;font-size:1.05rem}
+
+/* ---------- Portada ---------- */
+.hero{background:var(--verde);color:#fff;position:relative;overflow:hidden}
+.hero-inner{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:44px 48px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font:600 .74rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;
+  background:rgba(255,255,255,.16);padding:.5em .9em;border-radius:999px;margin:0 0 18px}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--amarillo)}
+.hero h1{font-size:clamp(1.9rem,4.4vw,3rem);line-height:1.08;margin:0 0 14px;text-wrap:balance;color:#fff}
+.hero h1 em{font-style:normal;color:var(--amarillo)}
+.hero .lead{color:rgba(255,255,255,.9);font-size:1.08rem;margin:0;max-width:56ch}
+.hero .lead code{background:rgba(0,0,0,.18);border-color:rgba(255,255,255,.25);color:#fff}
+.mosaic{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:380px;margin-left:auto;width:100%}
+.mosaic i{aspect-ratio:1;max-width:100%;display:grid;place-items:center;font:600 clamp(.75rem,1.6vw,1rem) var(--f-mono);font-style:normal;color:#fff}
+.mosaic .c{border-radius:50%} .mosaic .q1{border-radius:100% 0 0 0} .mosaic .q2{border-radius:0 100% 0 0}
+.mosaic .q3{border-radius:0 0 100% 0} .mosaic .q4{border-radius:0 0 0 100%} .mosaic .s{border-radius:14px}
+.mosaic .h{border-radius:999px 999px 0 0}
+.mosaic .dk{color:#1d2a1f}
+
+.start{padding-block:32px 64px}
+.start-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:start}
+.dist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 24px}
+.dist div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 14px;border-top:5px solid var(--c);box-shadow:var(--shadow)}
+.dist b{display:block;font:600 2rem/1 var(--f-display);color:var(--c-ink);margin-bottom:6px}
+.dist strong{display:block;font-weight:700;font-size:.95rem}
+.dist span{font-size:.86rem;color:var(--muted)}
+.rules-title{font-size:1.1rem;margin:0 0 12px}
+.rules{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.rules li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start}
+.rules .ico{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:700 .85rem var(--f-mono);color:#fff;background:var(--ic,var(--verde))}
+.rules li:nth-child(2) .ico{--ic:var(--turquesa)}
+.rules li:nth-child(5) .ico{--ic:var(--morado)}
+.rules li.is-alert{background:var(--warn-soft);border-radius:var(--r);padding:10px 12px;margin-inline:-12px}
+.rules li.is-alert .ico{--ic:var(--naranja);color:#1d2a1f}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.panel .stripe{height:6px}
+.panel-body{padding:24px}
+.panel h2{margin:0 0 4px;font-size:1.25rem}
+.panel p.sub{margin:0 0 18px;color:var(--muted);font-size:.95rem}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-weight:700;font-size:.92rem}
+.field input{border:2px solid var(--line);background:var(--surface-2);border-radius:10px;padding:.6em .85em}
+.field input:focus{outline:none;border-color:var(--turquesa);box-shadow:0 0 0 4px color-mix(in srgb,var(--turquesa) 20%,transparent)}
+.check{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;font-size:.92rem;color:var(--muted);margin:6px 0 18px;align-items:start}
+.check input{width:18px;height:18px;margin-top:3px;accent-color:var(--verde)}
+.form-error{color:var(--bad);font-size:.9rem;font-weight:600;margin:-6px 0 12px}
+.panel .btn{width:100%}
+
+/* ---------- Barra superior del examen ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);box-shadow:0 1px 0 var(--line)}
+.topbar .stripe{height:5px}
+.topbar .wrap{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:wrap}
+.brand{width:38px;height:38px;border-radius:10px;background:var(--verde);display:grid;place-items:center;color:#fff;font:700 .8rem var(--f-mono);flex:none;position:relative;overflow:hidden}
+.brand::after{content:"";position:absolute;right:-8px;bottom:-8px;width:20px;height:20px;border-radius:50%;background:var(--amarillo)}
+.brand span{position:relative;z-index:1}
+.who{min-width:0;flex:1 1 200px}
+.who b{display:block;font-family:var(--f-display);font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:.84rem;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:.3em .8em;font:600 .78rem var(--f-mono);
+  background:var(--surface-2);border:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--verde)}
+.chip.prog{background:var(--primary-soft);border-color:transparent;color:var(--ok)}
+.chip.warn{background:var(--naranja);border-color:transparent;color:#1d2a1f}
+.chip.warn .dot{background:#1d2a1f}
+.chip.bad{background:var(--fucsia);border-color:transparent;color:#fff}
+.progress{height:4px;background:var(--line)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--verde),var(--turquesa));transition:width .3s}
+
+/* ---------- Cuerpo del examen ---------- */
+.exam{display:grid;grid-template-columns:212px minmax(0,1fr);gap:24px;padding-block:24px 64px;align-items:start}
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 96px);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.side h3{font:600 .72rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.qnav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.qbtn{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:7px 0 0;cursor:pointer;display:grid;line-height:1.1;overflow:hidden;position:relative}
+.qbtn span{font:600 1.05rem var(--f-display);font-variant-numeric:tabular-nums;padding-bottom:3px}
+.qbtn small{font:700 .6rem/1 var(--f-mono);letter-spacing:.08em;color:var(--c-ink);background:var(--c-soft);padding:4px 0}
+.qbtn.done{border-color:var(--verde);background:var(--primary-soft)}
+.qbtn.done::after{content:"✓";position:absolute;top:2px;right:5px;font-size:.7rem;font-weight:800;color:var(--ok)}
+.qbtn.partial{border-color:var(--amarillo);background:color-mix(in srgb,var(--amarillo) 18%,var(--surface))}
+.qbtn.is-current{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--c)}
+.legend{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:5px;font-size:.82rem;color:var(--muted)}
+.legend li{display:flex;align-items:center;gap:8px}
+.legend i{width:12px;height:12px;border-radius:4px;border:2px solid var(--line);background:var(--surface)}
+.legend i.d{border-color:var(--verde);background:var(--primary-soft)}
+.legend i.p{border-color:var(--amarillo);background:color-mix(in srgb,var(--amarillo) 18%,var(--surface))}
+.types{margin:12px 0 0;padding:12px 0 0;border-top:1px dashed var(--line);list-style:none;display:grid;gap:5px;font-size:.82rem;color:var(--muted)}
+.types li{display:flex;align-items:center;gap:8px}
+.types b{font:700 .62rem var(--f-mono);padding:3px 6px;border-radius:5px;background:var(--c-soft);color:var(--c-ink)}
+.side .btn{width:100%;margin-top:16px}
+
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);min-width:0;overflow:hidden}
+.qcard-band{height:8px;background:var(--c)}
+.qcard-body{padding:26px}
+.q-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}
+.q-num{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--c);color:#fff;font:600 1.15rem var(--f-display)}
+.t-fill .q-num{color:#1d2a1f}
+.q-of{font:600 .75rem var(--f-mono);color:var(--muted);letter-spacing:.06em}
+.pill{font:700 .74rem var(--f-mono);padding:.35em .8em;border-radius:999px;letter-spacing:.03em;background:var(--c-soft);color:var(--c-ink)}
+.q-pts{margin-left:auto;font:600 1rem var(--f-display);font-variant-numeric:tabular-nums;background:var(--surface-2);border:1px solid var(--line);padding:.25em .8em;border-radius:999px}
+.eyebrow{margin:0 0 6px;font-size:.84rem;color:var(--c-ink);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.q-prompt{font:500 1.18rem/1.55 var(--f-display);margin:0 0 18px;max-width:70ch}
+.reqs{margin:0 0 16px;padding:0;list-style:none;display:grid;gap:8px;max-width:74ch;counter-reset:r}
+.reqs li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;counter-increment:r}
+.reqs li::before{content:counter(r);width:24px;height:24px;border-radius:50%;background:var(--c-soft);color:var(--c-ink);font:700 .75rem/24px var(--f-mono);text-align:center}
+.expected{margin:0 0 16px;font-size:.92rem}
+.expected b{font-family:var(--f-display);font-weight:600}
+.expected pre{margin:6px 0 0;font:13px/1.5 var(--f-mono);background:var(--surface-2);border:1px dashed var(--c);border-radius:10px;padding:10px 12px;overflow-x:auto}
+
+/* Paneles de código */
+.code-wrap,.editor{border-radius:12px;overflow:hidden;background:var(--code-bg);margin:0 0 18px;border:1px solid var(--code-line)}
+.code-head{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--code-head);color:var(--code-muted);
+  font:500 .75rem var(--f-mono);padding:8px 12px;border-bottom:1px solid var(--code-line);flex-wrap:wrap}
+.code-head .file{color:var(--code-ink);display:inline-flex;align-items:center;gap:8px}
+.code-head .file::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--c)}
+pre.code{margin:0;padding:14px 16px;overflow-x:auto;color:var(--code-ink);font:13.5px/1.7 var(--f-mono);tab-size:4}
+pre.code code{background:none;border:0;padding:0;font-size:inherit;color:inherit}
+.t-kw{color:var(--t-kw)} .t-str{color:var(--t-str)} .t-num{color:var(--t-num)} .t-com{color:var(--t-com);font-style:italic} .t-cl{color:var(--t-cl)}
+.blank{font:600 13.5px var(--f-mono);background:#2c372e;color:#fff;border:0;border-bottom:2px solid var(--turquesa);border-radius:5px 5px 0 0;
+  padding:1px 4px;margin:0 1px;min-width:4ch;text-align:center}
+.blank::placeholder{color:#7fa59a;font-weight:400}
+.blank:focus{outline:2px solid var(--turquesa);outline-offset:1px;background:#34413a}
+.blank:not(:placeholder-shown){border-bottom-color:var(--verde-claro);background:#2f3d2c}
+.fill-help{font-size:.92rem;color:var(--muted);margin:-6px 0 16px}
+
+.editor-body{display:grid;grid-template-columns:auto minmax(0,1fr)}
+.gutter{margin:0;padding:12px 10px 12px 12px;text-align:right;color:var(--code-muted);font:13.5px/1.6 var(--f-mono);user-select:none;overflow:hidden;
+  border-right:1px solid var(--code-line);min-width:3.2em}
+.editor textarea{display:block;width:100%;min-height:340px;resize:vertical;background:var(--code-bg);color:var(--code-ink);border:0;margin:0;
+  padding:12px 14px;font:13.5px/1.6 var(--f-mono);tab-size:4;white-space:pre;overflow:auto;caret-color:var(--amarillo)}
+.editor textarea:focus{outline:none;box-shadow:inset 0 0 0 2px var(--c)}
+
+/* Opciones */
+.options{border:0;margin:0 0 6px;padding:0;display:grid;gap:10px}
+.opt{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;border:2px solid var(--line);border-radius:14px;
+  padding:12px 14px;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--c)}
+.opt input{width:18px;height:18px;margin:0;accent-color:var(--verde)}
+.opt-letter{font:600 .9rem var(--f-display);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--c-soft);color:var(--c-ink)}
+.opt-text{min-width:0;overflow-wrap:anywhere;font-weight:600}
+.opt-text.mono{font-family:var(--f-mono);font-size:.95rem;white-space:pre-wrap;font-weight:500}
+.opt:has(input:checked){border-color:var(--verde);background:var(--primary-soft)}
+.opt:has(input:checked) .opt-letter{background:var(--verde);color:#fff}
+
+.qfoot{display:flex;justify-content:space-between;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.saved{font-size:.84rem;color:var(--muted);align-self:center;display:inline-flex;align-items:center;gap:6px}
+.saved::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--verde-claro)}
+
+/* ---------- Resultado ---------- */
+.result{padding-block:40px 64px;max-width:900px}
+.status{border-radius:20px;padding:26px 26px 26px;margin-bottom:22px;display:grid;gap:6px;position:relative;overflow:hidden;color:#fff}
+.status::before,.status::after{content:"";position:absolute;border-radius:50%;opacity:.9}
+.status::before{width:120px;height:120px;right:-30px;top:-40px;background:var(--amarillo)}
+.status::after{width:70px;height:70px;right:70px;bottom:-35px;background:var(--turquesa)}
+.status > *{position:relative;z-index:1;max-width:calc(100% - 120px)}
+.status.ok{background:var(--verde)}
+.status.bad{background:var(--fucsia)}
+.status.bad::before{background:var(--naranja)} .status.bad::after{background:var(--lila)}
+.status.warn{background:var(--naranja);color:#1d2a1f}
+.status.warn::before{background:var(--amarillo)} .status.warn::after{background:var(--fucsia)}
+.status h1{margin:0;font-size:1.65rem;line-height:1.2;text-wrap:balance}
+.status p{margin:0;opacity:.95}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;border-left:6px solid var(--sc)}
+.stat:nth-child(1){--sc:var(--turquesa)} .stat:nth-child(2){--sc:var(--azul)} .stat:nth-child(3){--sc:var(--morado)} .stat:nth-child(4){--sc:var(--naranja)}
+.stat b{display:block;font:600 1.6rem/1.15 var(--f-display);font-variant-numeric:tabular-nums}
+.stat span{font-size:.85rem;color:var(--muted)}
+.download{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--primary-soft);border:2px dashed var(--verde);border-radius:18px;padding:18px 22px;margin-bottom:22px}
+.download p{margin:0;flex:1 1 260px;color:var(--muted);font-size:.95rem}
+.download p b{color:var(--ink);font-family:var(--f-display);font-weight:600}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;font-size:.94rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:600 .72rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td.n span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;font:600 .85rem var(--f-display)}
+tr.t-fill td.n span{color:#1d2a1f}
+td .pill{white-space:nowrap}
+.tag{font:700 .72rem var(--f-mono);padding:.3em .7em;border-radius:999px;white-space:nowrap}
+.tag.done{background:var(--primary-soft);color:var(--ok)}
+.tag.partial{background:color-mix(in srgb,var(--amarillo) 30%,var(--surface));color:var(--warn)}
+.tag.empty{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.log{margin:22px 0 0;font-size:.94rem;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--fucsia);border-radius:14px;padding:14px 18px}
+.log h2{font-size:1.05rem;margin:0 0 8px}
+.log ul{margin:0;padding-left:1.2em;color:var(--muted)}
+
+/* ---------- Modal y aviso ---------- */
+.overlay{position:fixed;inset:0;background:rgba(14,22,15,.62);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border-radius:20px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.modal .stripe{height:8px}
+.modal.warn .stripe{background:var(--naranja)}
+.modal-body{padding:24px 26px 24px}
+.modal-ico{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font:700 1.4rem var(--f-display);background:var(--primary-soft);color:var(--ok);margin-bottom:12px}
+.modal.warn .modal-ico{background:var(--naranja);color:#1d2a1f}
+.modal h2{margin:0 0 10px;font-size:1.3rem;line-height:1.25;text-wrap:balance}
+.modal p{margin:0 0 12px;color:var(--muted)}
+.modal p b{color:var(--ink)}
+.modal .actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1d2a1f;color:#fff;border-left:6px solid var(--amarillo);
+  padding:11px 16px;border-radius:12px;font-size:.94rem;max-width:min(92vw,560px);z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+/* Cronómetro */
+.chip.timer{background:var(--primary-soft);border-color:transparent;color:var(--ok);font-size:.85rem;padding:.35em .9em .35em .5em;gap:8px}
+.chip.timer b{font:700 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.tbar{display:none;width:44px;height:8px;border-radius:999px;background:color-mix(in srgb,currentColor 18%,transparent);overflow:hidden}
+.chip.timer .tbar{display:block}
+.tbar i{display:block;height:100%;width:100%;background:currentColor;border-radius:inherit;transition:width 1s linear}
+.chip.timer.warn{background:var(--naranja);color:#1d2a1f}
+.chip.timer.bad{background:var(--fucsia);color:#fff;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--fucsia) 25%,transparent)}}
+@media (prefers-reduced-motion: reduce){ .chip.timer.bad{animation:none} }
+.hero-meta{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.hero-meta li{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:.3em .9em;font-size:.92rem}
+.hero-meta b{font-family:var(--f-display);font-weight:600;color:var(--amarillo)}
+.rules li.is-time{background:color-mix(in srgb,var(--turquesa) 12%,var(--surface));border-radius:var(--r);padding:10px 12px;margin-inline:-12px}
+.rules li.is-time .ico{--ic:var(--turquesa)}
+
+#print-area{display:none}
+
+@media (max-width: 860px){
+  .hero-inner{grid-template-columns:minmax(0,1fr);padding-block:32px 36px}
+  .mosaic{max-width:320px;margin:0;grid-template-columns:repeat(6,1fr)}
+  .mosaic i:nth-child(n+7){display:none}
+  .start-grid{grid-template-columns:minmax(0,1fr)}
+  .exam{grid-template-columns:minmax(0,1fr);gap:16px;padding-top:16px}
+  .side{position:static}
+  .qnav{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .legend,.types{display:flex;flex-wrap:wrap;gap:12px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .qcard-body{padding:18px}
+  .status > *{max-width:calc(100% - 60px)}
+}
+@media (max-width: 480px){
+  .dist{grid-template-columns:minmax(0,1fr)}
+  .qnav{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .q-prompt{font-size:1.05rem}
+  .brand{display:none}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+
+@media print{
+  body{background:#fff;color:#000}
+  body > *:not(#print-area){display:none!important}
+  #print-area{display:block!important;font:11pt/1.45 var(--f-sans);color:#000}
+  #print-area pre{white-space:pre-wrap;font:9pt/1.4 var(--f-mono);background:#f3f6f1;border-left:3px solid #508C46;padding:6px 8px;margin:4px 0 10px}
+  #print-area h1{font-size:16pt;margin:0 0 4px;color:#508C46}
+  #print-area h2{font-size:12pt;margin:14px 0 2px;page-break-after:avoid}
+  #print-area .q{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= PANTALLA DE INICIO ================= -->
+<div id="screen-start" hidden>
+  <div class="stripe" aria-hidden="true"></div>
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <p class="kicker" id="course-label">Programación Orientada a Objetos</p>
+        <h1 id="exam-title">Parcial de Java: fundamentos, <em>clases y objetos</em></h1>
+        <ul class="hero-meta" id="hero-meta">
+          <li><b id="hm-min">45</b> minutos</li><li><b>12</b> preguntas</li><li><b>100</b> puntos</li>
+        </ul>
+        <p class="lead">Variables y constantes, tipos primitivos, operadores y control de flujo, más la implementación de clases: constructores, <code>this</code>, encapsulamiento, referencias y <code>null</code>.</p>
+      </div>
+      <div class="mosaic" aria-hidden="true">
+        <i class="c" style="background:var(--amarillo)"><span class="dk">{ }</span></i>
+        <i class="q2" style="background:var(--turquesa)"></i>
+        <i class="s" style="background:var(--morado)">new</i>
+        <i class="q4" style="background:var(--naranja)"></i>
+        <i class="h" style="background:var(--azul)">if</i>
+        <i class="c" style="background:var(--fucsia)"></i>
+        <i class="q1" style="background:var(--verde-claro)"></i>
+        <i class="s" style="background:var(--lila)">==</i>
+        <i class="q3" style="background:var(--azul-claro)"></i>
+        <i class="s" style="background:var(--naranja-2)"><span class="dk">++</span></i>
+        <i class="c" style="background:var(--verde-agua)"><span class="dk">;</span></i>
+        <i class="q2" style="background:var(--rosa)"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap start">
+    <div class="start-grid">
+      <section>
+        <div class="dist" aria-label="Distribución del parcial">
+          <div class="t-mcq"><b>6</b><strong>Selección múltiple</strong><span>5 pts cada una</span></div>
+          <div class="t-fill"><b>3</b><strong>Completar código</strong><span>10 pts cada una</span></div>
+          <div class="t-code"><b>3</b><strong>Escribir código</strong><span>40 pts en total</span></div>
+        </div>
+
+        <h2 class="rules-title">Antes de empezar</h2>
+        <ul class="rules">
+          <li><span class="ico">1</span><span>Son <b>12 preguntas</b> y <b>100 puntos</b>. Cada estudiante recibe una <b>versión distinta</b> del parcial. Puedes moverte entre preguntas en cualquier orden; tus respuestas se guardan solas en este navegador.</span></li>
+          <li class="is-time" id="rule-time"><span class="ico">⏱</span><span>Tienes <b>45 minutos</b> desde que pulses «Iniciar parcial». El reloj no se detiene si cierras o recargas la página, y al llegar a 0 el parcial se entrega solo con lo que hayas respondido.</span></li>
+          <li><span class="ico">2</span><span>En <b>completar código</b> cada espacio vale lo mismo, así que hay puntaje parcial. En <b>escribir código</b> el docente califica tu solución completa.</span></li>
+          <li class="is-alert"><span class="ico">!</span><span id="rule-tab">Si sales de esta pestaña o de la ventana por más de <b>15 segundos</b>, recibirás una advertencia. Si vuelve a pasar, el parcial <b>se cerrará automáticamente</b> con las preguntas que hayas resuelto hasta ese momento.</span></li>
+          <li class="is-alert" id="rule-paste"><span class="ico">!</span><span>Pegar texto está deshabilitado en las respuestas. Los intentos quedan registrados.</span></li>
+          <li><span class="ico">3</span><span>Al terminar, descarga el <b>PDF con tus respuestas</b> y súbelo al sistema. Presenta el parcial completo en el mismo equipo y navegador.</span></li>
+        </ul>
+      </section>
+
+      <form class="panel" id="start-form" novalidate>
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="panel-body">
+          <h2>Datos del estudiante</h2>
+          <p class="sub">Aparecerán en el PDF que vas a entregar.</p>
+          <div class="field">
+            <label for="f-nombre">Nombre completo</label>
+            <input id="f-nombre" name="nombre" autocomplete="name" required maxlength="80" placeholder="Ej. Laura Gómez Pérez">
+          </div>
+          <div class="field">
+            <label for="f-doc">Documento o código estudiantil</label>
+            <input id="f-doc" name="documento" required maxlength="30" inputmode="text" placeholder="Ej. 1012345678">
+          </div>
+          <div class="field">
+            <label for="f-grupo">Grupo (opcional)</label>
+            <input id="f-grupo" name="grupo" maxlength="30" placeholder="Ej. POO-02">
+          </div>
+          <label class="check" for="f-acepto"><input type="checkbox" id="f-acepto"><span>Leí las condiciones y entiendo que salir de la pestaña más de una vez cierra el parcial.</span></label>
+          <p class="form-error" id="form-error" hidden></p>
+          <button class="btn btn-primary btn-lg" type="submit">Iniciar parcial</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<!-- ================= PANTALLA DEL EXAMEN ================= -->
+<div id="screen-exam" hidden>
+  <header class="topbar">
+    <div class="stripe" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="brand" aria-hidden="true"><span>&lt;/&gt;</span></div>
+      <div class="who"><b id="tb-name"></b><span id="tb-doc"></span></div>
+      <div class="chips">
+        <span class="chip prog" title="Preguntas respondidas"><span id="progress-count">0/12</span>&nbsp;respondidas</span>
+        <span class="chip" id="chip-clock" title="Tiempo restante del parcial"><span class="tbar" aria-hidden="true"><i id="tbar"></i></span><span id="clock-label">Quedan</span>&nbsp;<b id="clock">45:00</b></span>
+        <span class="chip" id="chip-faltas" title="Salidas de la pestaña registradas"><span class="dot"></span><span id="faltas">Sin advertencias</span></span>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+  </header>
+
+  <div class="wrap exam">
+    <aside class="side">
+      <h3>Preguntas</h3>
+      <nav class="qnav" id="qnav" aria-label="Índice de preguntas"></nav>
+      <ul class="legend">
+        <li><i class="d"></i>Respondida</li>
+        <li><i class="p"></i>Incompleta</li>
+        <li><i></i>Sin responder</li>
+      </ul>
+      <ul class="types">
+        <li class="t-mcq"><b>SM</b>Selección múltiple</li>
+        <li class="t-fill"><b>CC</b>Completar código</li>
+        <li class="t-code"><b>EC</b>Escribir código</li>
+      </ul>
+      <button class="btn btn-primary" type="button" id="btn-finish-side">Entregar parcial</button>
+    </aside>
+
+    <article class="qcard" id="qcard" aria-live="polite"></article>
+  </div>
+</div>
+
+<!-- ================= PANTALLA DE RESULTADO ================= -->
+<main id="screen-result" class="wrap result" hidden></main>
+
+<div id="modal-root"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+<div id="print-area"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =================== CONFIGURACIÓN =================== */
+const CONFIG = {
+  curso: "Programación Orientada a Objetos",
+  titulo: "Parcial · Fundamentos de Java, clases y objetos",
+  limiteFueraSeg: 15,          // segundos fuera de la pestaña antes de registrar una falta
+  duracionMinutos: 45,         // duración del parcial; al llegar a 0 se entrega solo (0 = sin límite)
+  versionPorDocumento: true,   // true = la versión depende del documento: el mismo estudiante siempre recibe la misma
+  semilla: "POO-2026-2",       // cámbiala para generar versiones nuevas en otro grupo o semestre
+  bloquearPegar: true,         // impide pegar texto en las respuestas
+  mostrarPuntajeAutomatico: true, // muestra el puntaje de las preguntas cerradas (1–9) al estudiante y en el PDF
+  detallePorPreguntaEnPDF: false, // true = el PDF muestra el puntaje automático de cada pregunta
+  storageKey: "parcial-java-poo-v2"
+};
+
+const TYPE_LABEL = {mcq:"Selección múltiple", fill:"Completar código", code:"Escribir código"};
+const TYPE_SHORT = {mcq:"SM", fill:"CC", code:"EC"};
+
+/* =================== PREGUNTAS =================== */
+/* =================== BANCO DE PREGUNTAS =================== */
+/* 12 espacios con 3 versiones cada uno. Cada estudiante recibe una versión por espacio,
+   con las opciones y el orden dentro de cada tipo mezclados. */
+const BANK = [{"slot":"S1","type":"mcq","pts":5,"tema":"Variables, constantes y tipos primitivos","variants":[{"vid":"A","prompt":"¿Cuál de los siguientes <b>no</b> es un tipo de dato primitivo en Java?","options":["int","boolean","String","char"],"mono":true},{"vid":"B","prompt":"¿Cuál de estas declaraciones <b>no</b> compila?","options":["int edad = 20;","double precio = 15.5;","boolean activo = \"true\";","char letra = 'A';"],"mono":true},{"vid":"C","file":"Banco.java","prompt":"Observa el código. ¿Qué ocurre con la última línea?","code":"final double TASA_INTERES = 0.02;\ndouble saldo = 150000;\ndouble interes = saldo * TASA_INTERES;\nTASA_INTERES = 0.05;","options":["TASA_INTERES pasa a valer 0.05","No compila porque TASA_INTERES es final","Compila, pero falla al ejecutarse","Se crea una segunda constante con valor 0.05"]}]},{"slot":"S2","type":"mcq","pts":5,"tema":"Operadores aritméticos, de asignación y lógicos","variants":[{"vid":"A","file":"Operadores.java","prompt":"¿Qué imprime el siguiente fragmento?","code":"int a = 17;\nint b = 5;\ndouble c = a / b;\nSystem.out.println(c + \" \" + (a % b));","options":["3.4 2","3 2","3.4 3","3.0 2"],"mono":true},{"vid":"B","file":"Incremento.java","prompt":"¿Qué imprime el siguiente fragmento?","code":"int x = 5;\nint y = x++ + ++x;\nSystem.out.println(x + \" \" + y);","options":["7 12","6 11","7 11","6 12"],"mono":true},{"vid":"C","file":"Logicos.java","prompt":"¿Qué imprime el siguiente fragmento?","code":"int a = 10;\na += 5;\na %= 4;\nboolean r = a > 2 && a != 3;\nSystem.out.println(a + \" \" + r);","options":["3 true","3 false","15 true","1 false"],"mono":true}]},{"slot":"S3","type":"mcq","pts":5,"tema":"Condicionales: if y switch","variants":[{"vid":"A","file":"Menu.java","prompt":"Observa que algunos <code>case</code> no tienen <code>break</code>. ¿Qué imprime el programa?","code":"int opcion = 2;\nswitch (opcion) {\n    case 1:\n        System.out.print(\"A\");\n    case 2:\n        System.out.print(\"B\");\n    case 3:\n        System.out.print(\"C\");\n        break;\n    default:\n        System.out.print(\"D\");\n}","options":["BC","B","BCD","ABC"],"mono":true},{"vid":"B","file":"Notas.java","prompt":"Java evalúa las condiciones en orden. ¿Qué imprime este programa?","code":"int nota = 85;\nif (nota >= 60) {\n    System.out.print(\"Aprobó\");\n} else if (nota >= 80) {\n    System.out.print(\"Excelente\");\n} else {\n    System.out.print(\"Reprobó\");\n}","options":["Excelente","AprobóExcelente","Aprobó","Reprobó"],"mono":true},{"vid":"C","file":"Dias.java","prompt":"¿Qué imprime este <i>switch expression</i>?","code":"int dia = 7;\nString tipo = switch (dia) {\n    case 1, 2, 3, 4, 5 -> \"Laboral\";\n    case 6, 7 -> \"Fin de semana\";\n    default -> \"Inválido\";\n};\nSystem.out.println(tipo);","options":["Laboral","Inválido","No compila: falta break","Fin de semana"]}]},{"slot":"S4","type":"mcq","pts":5,"tema":"Constructores y la palabra this","variants":[{"vid":"A","file":"Estudiante.java","prompt":"Con esta clase, ¿qué imprime <code>System.out.println(e.getNombre());</code> después de ejecutar <code>Estudiante e = new Estudiante(\"Ana\", 20);</code>?","code":"public class Estudiante {\n    private String nombre;\n    private int edad;\n\n    public Estudiante(String nombre, int edad) {\n        nombre = nombre;\n        edad = edad;\n    }\n\n    public String getNombre() {\n        return nombre;\n    }\n}","options":["Ana","null","No compila: falta this","Lanza NullPointerException"]},{"vid":"B","file":"Producto.java","prompt":"La clase <code>Producto</code> solo tiene este constructor. ¿Qué pasa con la instrucción <code>Producto p = new Producto();</code>?","code":"public class Producto {\n    private String nombre;\n\n    public Producto(String nombre) {\n        this.nombre = nombre;\n    }\n}","options":["Crea un producto con nombre null","No compila: ya no existe el constructor sin parámetros","Crea un producto con nombre vacío \"\"","Lanza NullPointerException al ejecutarse"]},{"vid":"C","prompt":"¿Cuál de estas afirmaciones sobre los constructores en Java es correcta?","options":["Se declaran con tipo de retorno void","Solo puede haber un constructor por clase","Se llaman igual que la clase y no tienen tipo de retorno","Hay que llamarlos manualmente después de usar new"]}]},{"slot":"S5","type":"mcq","pts":5,"tema":"Referencias y comparación de objetos","variants":[{"vid":"A","file":"Main.java","prompt":"La clase <code>Estudiante</code> tiene un constructor correcto con <code>this</code>, y métodos <code>getEdad()</code> y <code>setEdad(int)</code>. ¿Qué imprime este código?","code":"Estudiante a = new Estudiante(\"Ana\", 20);\nEstudiante b = a;\nb.setEdad(30);\nEstudiante c = new Estudiante(\"Ana\", 20);\n\nSystem.out.println(a.getEdad() + \" \" + c.getEdad()\n        + \" \" + (a == b) + \" \" + (a == c));","options":["20 20 true true","30 30 true true","20 20 false false","30 20 true false"],"mono":true},{"vid":"B","file":"Main.java","prompt":"¿Qué imprime este código?","code":"String a = new String(\"Ana\");\nString b = new String(\"Ana\");\nSystem.out.println((a == b) + \" \" + a.equals(b));","options":["true true","false true","false false","true false"],"mono":true},{"vid":"C","file":"Main.java","prompt":"La clase <code>Estudiante</code> tiene <code>cumplirAnios()</code> (suma 1 a la edad) y <code>getEdad()</code>. ¿Qué imprime este código?","code":"Estudiante ana = new Estudiante(\"Ana\", 20);\nEstudiante luis = new Estudiante(\"Luis\", 22);\nana.cumplirAnios();\nluis = ana;\nluis.cumplirAnios();\nSystem.out.println(ana.getEdad() + \" \" + luis.getEdad());","options":["21 23","22 22","21 22","22 23"],"mono":true}]},{"slot":"S6","type":"mcq","pts":5,"tema":"Bucles for, while y do-while","variants":[{"vid":"A","file":"Bucles.java","prompt":"¿Qué imprime el siguiente fragmento?","code":"int i = 10;\n\nwhile (i < 5) {\n    System.out.print(\"W\");\n    i++;\n}\n\ndo {\n    System.out.print(\"D\");\n    i++;\n} while (i < 5);","options":["D","No imprime nada","WD","DDDDD"]},{"vid":"B","file":"Suma.java","prompt":"¿Qué imprime el siguiente fragmento?","code":"int suma = 0;\nfor (int i = 1; i <= 10; i += 3) {\n    suma += i;\n}\nSystem.out.println(suma);","options":["12","55","22","15"],"mono":true},{"vid":"C","file":"Potencias.java","prompt":"¿Qué imprime el siguiente fragmento?","code":"int n = 1;\nint vueltas = 0;\nwhile (n < 50) {\n    n = n * 3;\n    vueltas++;\n}\nSystem.out.println(vueltas + \" \" + n);","options":["3 27","4 27","3 81","4 81"],"mono":true}]},{"slot":"F1","type":"fill","pts":10,"tema":"Constantes, bucles y operadores","variants":[{"vid":"A","file":"Compra.java","prompt":"Completa el programa para que calcule el total de una compra con IVA. La constante <code>IVA</code> no debe poder modificarse y el <code>for</code> debe recorrer todo el arreglo sin salirse de sus límites.","template":"public class Compra {\n    public static void main(String[] args) {\n        {{1}} double IVA = 0.19;\n        int[] precios = {12000, 8500, 3200};\n        double subtotal = 0;\n\n        for (int i = 0; i {{2}} precios.{{3}}; i++) {\n            subtotal {{4}} precios[i];\n        }\n\n        double total = subtotal * (1 + IVA);\n        System.out.println(\"Total: \" + total);\n    }\n}","widths":{"1":6,"2":3,"3":7,"4":3}},{"vid":"B","file":"Promedio.java","prompt":"Completa el programa para que sume las notas con un <i>for-each</i>, calcule el promedio y muestre el mensaje solo si el promedio es <b>mayor o igual</b> a 3.0.","template":"public class Promedio {\n    public static void main(String[] args) {\n        {{1}} int TOTAL_NOTAS = 4;\n        double[] notas = {3.5, 4.0, 2.8, 4.7};\n        double suma = 0;\n\n        for (double nota {{2}} notas) {\n            suma {{3}} nota;\n        }\n\n        double promedio = suma / TOTAL_NOTAS;\n        if (promedio {{4}} 3.0) {\n            System.out.println(\"Aprobó con \" + promedio);\n        }\n    }\n}","widths":{"1":6,"2":2,"3":3,"4":3}},{"vid":"C","file":"Tabla.java","prompt":"Completa el programa para que recorra la tabla del 7 (del 1 al 10) con un <code>while</code> e imprima <b>solo los resultados pares</b>.","template":"public class Tabla {\n    public static void main(String[] args) {\n        final int NUMERO = 7;\n        int i = 1;\n\n        {{1}} (i <= 10) {\n            int resultado = NUMERO {{2}} i;\n            if (resultado {{3}} 2 == 0) {\n                System.out.println(NUMERO + \" x \" + i + \" = \" + resultado);\n            }\n            i{{4}};\n        }\n    }\n}","widths":{"1":6,"2":2,"3":2,"4":5}}]},{"slot":"F2","type":"fill","pts":10,"tema":"Implementación de clases y encapsulamiento","variants":[{"vid":"A","file":"Producto.java","prompt":"Completa la clase <code>Producto</code>: atributo encapsulado, constructor que use <code>this</code>, un getter y un setter que solo acepte precios que no sean negativos.","template":"public class Producto {\n    {{1}} String nombre;\n    private double precio;\n\n    public {{2}}(String nombre, double precio) {\n        {{3}}.nombre = nombre;\n        this.precio = precio;\n    }\n\n    public {{4}} getPrecio() {\n        {{5}} precio;\n    }\n\n    public void setPrecio(double precio) {\n        if (precio {{6}} 0) {\n            this.precio = precio;\n        }\n    }\n}","widths":{"1":8,"2":9,"3":5,"4":7,"5":7,"6":3}},{"vid":"B","file":"Mascota.java","prompt":"Completa la clase <code>Mascota</code>: atributos privados, constructor con <code>this</code>, un getter, un setter que no devuelve nada y un <code>toString()</code>.","template":"public class Mascota {\n    private String nombre;\n    {{1}} int edad;\n\n    public Mascota(String nombre, int edad) {\n        this.nombre = nombre;\n        {{2}}.edad = edad;\n    }\n\n    public String {{3}}() {\n        return nombre;\n    }\n\n    public {{4}} setEdad(int edad) {\n        if (edad >= 0) {\n            this.edad = edad;\n        }\n    }\n\n    @Override\n    public String toString() {\n        {{5}} \"Mascota{nombre='\" + nombre + \"', edad=\" + edad + \"}\";\n    }\n}","widths":{"1":8,"2":5,"3":10,"4":5,"5":7}},{"vid":"C","file":"Libro.java","prompt":"Completa la clase <code>Libro</code>, que tiene dos constructores (sobrecarga). El método <code>esLargo()</code> debe devolver <code>true</code> si el libro tiene <b>más de</b> 300 páginas.","template":"public class Libro {\n    private String titulo;\n    private int paginas;\n\n    public {{1}}() {\n        this.titulo = \"Sin título\";\n        this.paginas = 0;\n    }\n\n    public Libro(String titulo, int {{2}}) {\n        this.titulo = titulo;\n        this.paginas = paginas;\n    }\n\n    public {{3}} esLargo() {\n        return paginas {{4}} 300;\n    }\n\n    public int getPaginas() {\n        {{5}} paginas;\n    }\n}","widths":{"1":6,"2":8,"3":8,"4":3,"5":7}}]},{"slot":"F3","type":"fill","pts":10,"tema":"Instancias, referencias y null","variants":[{"vid":"A","file":"Tienda.java","prompt":"La clase <code>Producto</code> tiene el constructor <code>Producto(String nombre, double precio)</code>, y los métodos <code>getPrecio()</code> y <code>setPrecio(double)</code>. Completa el <code>main</code>: crea el objeto, evita una <code>NullPointerException</code> y sube el precio 3 veces con un ciclo que se ejecute al menos una vez. Debe imprimir <code>1800.0</code>.","template":"public class Tienda {\n    public static void main(String[] args) {\n        final int MAX_INTENTOS = 3;\n        Producto lapiz = {{1}} Producto(\"Lápiz\", 1500);\n        Producto borrador = null;\n\n        if (borrador {{2}} null) {\n            System.out.println(borrador.getPrecio());\n        }\n\n        int intentos = 0;\n        {{3}} {\n            lapiz.setPrecio(lapiz.getPrecio() + 100);\n            intentos++;\n        } {{4}} (intentos < MAX_INTENTOS);\n\n        System.out.println(lapiz.{{5}}());   // 1800.0\n    }\n}","widths":{"1":4,"2":3,"3":6,"4":6,"5":10}},{"vid":"B","file":"Veterinaria.java","prompt":"La clase <code>Mascota</code> tiene el constructor <code>Mascota(String nombre, int edad)</code>, y los métodos <code>getNombre()</code>, <code>setEdad(int)</code> y <code>toString()</code>. Completa el <code>main</code> para que la salida coincida con los comentarios.","template":"public class Veterinaria {\n    public static void main(String[] args) {\n        Mascota luna = {{1}} Mascota(\"Luna\", 3);\n        Mascota otra = {{2}};   // la MISMA mascota, sin crear otro objeto\n        otra.setEdad(4);\n\n        Mascota firulais = null;\n        if (firulais {{3}} null) {\n            System.out.println(firulais.getNombre());\n        }\n\n        System.out.println(luna.{{4}}());   // Mascota{nombre='Luna', edad=4}\n        System.out.println(luna {{5}} otra);  // true\n    }\n}","widths":{"1":4,"2":5,"3":3,"4":9,"5":3}},{"vid":"C","file":"Biblioteca.java","prompt":"La clase <code>Libro</code> tiene un constructor vacío, otro <code>Libro(String titulo, int paginas)</code> y el método <code>boolean esLargo()</code> (más de 300 páginas). Completa el <code>main</code>: compara textos de forma correcta y cuenta los libros largos.","template":"public class Biblioteca {\n    public static void main(String[] args) {\n        Libro a = new Libro(\"Java\", 450);\n        Libro b = {{1}} Libro();\n        String buscado = \"Java\";\n        String titulo = \"Java\";\n\n        if (titulo.{{2}}(buscado)) {\n            System.out.println(\"Encontrado\");\n        }\n\n        int largos = 0;\n        Libro[] libros = {a, b};\n        for (Libro libro {{3}} libros) {\n            if (libro.{{4}}()) {\n                largos{{5}};\n            }\n        }\n        System.out.println(\"Libros largos: \" + largos);   // 1\n    }\n}","widths":{"1":4,"2":7,"3":2,"4":8,"5":5}}]},{"slot":"C1","type":"code","pts":13,"tema":"Control de flujo: for, if y operador %","variants":[{"vid":"A","file":"Multiplos.java","prompt":"Escribe un programa completo (clase con <code>main</code>) que recorra los números del 1 al 50 y calcule:","reqs":["La suma de los números que sean múltiplos de 3 <b>o</b> de 5.","La cantidad de números pares.","Usa una constante <code>final</code> para el límite (50), un bucle <code>for</code>, condicionales <code>if</code> y el operador <code>%</code>.","Al final imprime ambos resultados con un mensaje claro."],"expected":"Suma de múltiplos de 3 o 5: 593\nCantidad de pares: 25","starter":"public class Multiplos {\n    public static void main(String[] args) {\n\n    }\n}"},{"vid":"B","file":"FizzBuzz.java","prompt":"Escribe un programa completo (clase con <code>main</code>) que recorra los números del 1 al 30 e imprima, uno por línea:","reqs":["<code>FizzBuzz</code> si el número es múltiplo de 3 <b>y</b> de 5.","<code>Fizz</code> si solo es múltiplo de 3, y <code>Buzz</code> si solo es múltiplo de 5.","El número, en cualquier otro caso.","Usa una constante <code>final</code> para el límite, un <code>for</code>, <code>if / else if / else</code> y el operador <code>%</code>.","Al final imprime cuántas veces se escribió <code>FizzBuzz</code>."],"expected":"1\n2\nFizz\n4\nBuzz\n...\n29\nFizzBuzz\nVeces FizzBuzz: 2","starter":"public class FizzBuzz {\n    public static void main(String[] args) {\n\n    }\n}"},{"vid":"C","file":"Cajero.java","prompt":"Escribe un programa completo (clase con <code>main</code>) que simule el ingreso del PIN en un cajero:","reqs":["Declara las constantes <code>PIN_CORRECTO = 4321</code> y <code>MAX_INTENTOS = 3</code>.","Usa el arreglo <code>int[] intentos = {1111, 2222, 4321};</code> como los PIN que digita el usuario.","Con un <code>while</code>, revisa los intentos uno por uno y detente cuando acierte o cuando se agoten los intentos (sin salirte del arreglo).","Imprime <code>Acceso concedido en el intento N</code> o, si nunca acierta, <code>Tarjeta bloqueada</code>."],"expected":"Acceso concedido en el intento 3\n\n(Con {1111, 2222, 3333} debería imprimir: Tarjeta bloqueada)","starter":"public class Cajero {\n    public static void main(String[] args) {\n\n    }\n}"}]},{"slot":"C2","type":"code","pts":13,"tema":"Implementación de clases: constructor, encapsulamiento y toString()","variants":[{"vid":"A","file":"CuentaBancaria.java","prompt":"Escribe la clase <code>CuentaBancaria</code> completa con estas condiciones:","reqs":["Atributos privados <code>titular</code> (String) y <code>saldo</code> (double).","Un constructor que reciba <code>titular</code> y <code>saldoInicial</code>, use <code>this</code> y, si el saldo inicial es negativo, deje el saldo en 0.","<code>depositar(double monto)</code>: solo suma si el monto es mayor que 0.","<code>retirar(double monto)</code>: retorna <code>boolean</code>; retira solo si el monto es mayor que 0 y hay saldo suficiente.","<code>getSaldo()</code> y <code>toString()</code> con el formato <code>CuentaBancaria{titular='Ana', saldo=1500.0}</code>."],"starter":"public class CuentaBancaria {\n\n}"},{"vid":"B","file":"Rectangulo.java","prompt":"Escribe la clase <code>Rectangulo</code> completa con estas condiciones:","reqs":["Atributos privados <code>ancho</code> y <code>alto</code> (double).","Un constructor <code>Rectangulo(double ancho, double alto)</code> que use <code>this</code>; si algún valor es menor o igual a 0, ese lado queda en 1.","<code>getArea()</code> y <code>getPerimetro()</code>, que retornan double.","<code>esCuadrado()</code>: retorna <code>boolean</code>. Y <code>setAncho(double ancho)</code>, que solo acepta valores mayores que 0.","<code>toString()</code> con el formato <code>Rectangulo{ancho=2.0, alto=3.0}</code>."],"starter":"public class Rectangulo {\n\n}"},{"vid":"C","file":"ItemInventario.java","prompt":"Escribe la clase <code>ItemInventario</code> completa con estas condiciones:","reqs":["Atributos privados <code>nombre</code> (String), <code>cantidad</code> (int) y <code>precioUnitario</code> (double).","Un constructor que reciba los tres valores y use <code>this</code>; si la cantidad es negativa, queda en 0.","<code>agregar(int unidades)</code>: solo suma si las unidades son mayores que 0.","<code>vender(int unidades)</code>: retorna <code>boolean</code>; vende solo si las unidades son mayores que 0 y hay suficientes.","<code>getCantidad()</code>, <code>getValorInventario()</code> (cantidad × precio) y <code>toString()</code> con el formato <code>ItemInventario{nombre='Lápiz', cantidad=10}</code>."],"starter":"public class ItemInventario {\n\n}"}]},{"slot":"C3","type":"code","pts":14,"tema":"Instancias y creación de objetos: referencias, == y null","variants":[{"vid":"A","file":"Main.java","prompt":"Supón que ya existe la clase <code>CuentaBancaria</code> con el constructor <code>CuentaBancaria(String titular, double saldoInicial)</code> y los métodos <code>depositar(double)</code>, <code>retirar(double)</code> (retorna boolean), <code>getSaldo()</code> y <code>toString()</code>. Escribe la clase <code>Main</code> con un método <code>main</code> que:","reqs":["Cree dos cuentas con <code>new</code>: una de \"Ana\" con 100000 y otra de \"Luis\" con 50000.","Declare <code>CuentaBancaria copia = ana;</code> y deposite 20000 usando <code>copia</code>.","Intente retirar 200000 de la cuenta de Luis e imprima un mensaje distinto según el <code>boolean</code> que retorna <code>retirar</code>.","Imprima ambas cuentas (usando <code>toString()</code>) y el resultado de <code>copia == ana</code>. En un comentario, explica por qué cambió el saldo de Ana.","Declare <code>CuentaBancaria pendiente = null;</code> y llame a <code>getSaldo()</code> solo si no es <code>null</code>."],"starter":"public class Main {\n    public static void main(String[] args) {\n\n    }\n}"},{"vid":"B","file":"Main.java","prompt":"Supón que ya existe la clase <code>Rectangulo</code> con el constructor <code>Rectangulo(double ancho, double alto)</code> y los métodos <code>getArea()</code>, <code>esCuadrado()</code>, <code>setAncho(double)</code> y <code>toString()</code>. Escribe la clase <code>Main</code> con un método <code>main</code> que:","reqs":["Cree con <code>new</code> un rectángulo <code>r1</code> de 2 × 3 y otro <code>r2</code> de 4 × 4.","Imprima cuál de los dos tiene mayor área (o si son iguales) usando <code>if / else</code>.","Declare <code>Rectangulo alias = r1;</code>, cambie el ancho a 10 usando <code>alias</code> e imprima <code>r1</code>. En un comentario, explica por qué <code>r1</code> cambió.","Recorra el arreglo <code>Rectangulo[] figuras = {r1, r2};</code> con un <i>for-each</i> y cuente cuántos son cuadrados.","Declare <code>Rectangulo vacio = null;</code> y llame a <code>getArea()</code> solo si no es <code>null</code>."],"expected":"r2 tiene mayor área\nRectangulo{ancho=10.0, alto=3.0}\nCuadrados: 1","starter":"public class Main {\n    public static void main(String[] args) {\n\n    }\n}"},{"vid":"C","file":"Main.java","prompt":"Supón que ya existe la clase <code>ItemInventario</code> con el constructor <code>ItemInventario(String nombre, int cantidad, double precioUnitario)</code> y los métodos <code>vender(int)</code> (retorna boolean), <code>getCantidad()</code>, <code>getValorInventario()</code> y <code>toString()</code>. Escribe la clase <code>Main</code> con un método <code>main</code> que:","reqs":["Cree con <code>new</code>: <code>lapiz</code> (\"Lápiz\", 10, 1500) y <code>cuaderno</code> (\"Cuaderno\", 5, 4000).","Venda 3 lápices e intente vender 8 cuadernos; para cada venta imprima <code>Venta realizada</code> o <code>Stock insuficiente</code> según el boolean.","Cree <code>ItemInventario otro = new ItemInventario(\"Lápiz\", 7, 1500);</code>, imprima <code>lapiz == otro</code> y explica en un comentario por qué da false aunque tengan los mismos datos.","Calcule e imprima el valor total del inventario de <code>lapiz</code> y <code>cuaderno</code>.","Declare <code>ItemInventario agotado = null;</code> y use <code>getCantidad()</code> solo si no es <code>null</code>."],"expected":"Venta realizada\nStock insuficiente\nfalse\nValor total: 30500.0","starter":"public class Main {\n    public static void main(String[] args) {\n\n    }\n}"}]}];
+const KEY = JSON.parse(atob("eyJTMS1BIjoyLCJTMS1CIjoyLCJTMS1DIjoxLCJTMi1BIjozLCJTMi1CIjowLCJTMi1DIjoxLCJTMy1BIjowLCJTMy1CIjoyLCJTMy1DIjozLCJTNC1BIjoxLCJTNC1CIjoxLCJTNC1DIjoyLCJTNS1BIjozLCJTNS1CIjoxLCJTNS1DIjoxLCJTNi1BIjowLCJTNi1CIjoyLCJTNi1DIjozLCJGMS1BIjp7IjEiOlsiZmluYWwiXSwiMiI6WyI8Il0sIjMiOlsibGVuZ3RoIl0sIjQiOlsiKz0iXX0sIkYxLUIiOnsiMSI6WyJmaW5hbCJdLCIyIjpbIjoiXSwiMyI6WyIrPSJdLCI0IjpbIj49Il19LCJGMS1DIjp7IjEiOlsid2hpbGUiXSwiMiI6WyIqIl0sIjMiOlsiJSJdLCI0IjpbIisrIiwiKz0xIl19LCJGMi1BIjp7IjEiOlsicHJpdmF0ZSJdLCIyIjpbIlByb2R1Y3RvIl0sIjMiOlsidGhpcyJdLCI0IjpbImRvdWJsZSJdLCI1IjpbInJldHVybiJdLCI2IjpbIj49IiwiPiJdfSwiRjItQiI6eyIxIjpbInByaXZhdGUiXSwiMiI6WyJ0aGlzIl0sIjMiOlsiZ2V0Tm9tYnJlIl0sIjQiOlsidm9pZCJdLCI1IjpbInJldHVybiJdfSwiRjItQyI6eyIxIjpbIkxpYnJvIl0sIjIiOlsicGFnaW5hcyJdLCIzIjpbImJvb2xlYW4iXSwiNCI6WyI+Il0sIjUiOlsicmV0dXJuIl19LCJGMy1BIjp7IjEiOlsibmV3Il0sIjIiOlsiIT0iXSwiMyI6WyJkbyJdLCI0IjpbIndoaWxlIl0sIjUiOlsiZ2V0UHJlY2lvIl19LCJGMy1CIjp7IjEiOlsibmV3Il0sIjIiOlsibHVuYSJdLCIzIjpbIiE9Il0sIjQiOlsidG9TdHJpbmciXSwiNSI6WyI9PSJdfSwiRjMtQyI6eyIxIjpbIm5ldyJdLCIyIjpbImVxdWFscyJdLCIzIjpbIjoiXSwiNCI6WyJlc0xhcmdvIl0sIjUiOlsiKysiLCIrPTEiXX19"));
+let QUESTIONS = [];
+
+function hashStr(str){ let h = 2166136261 >>> 0; for(const ch of str){ h ^= ch.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h >>> 0; }
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function shuffle(arr, r){ const a = arr.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+const normDoc = d => String(d).toUpperCase().replace(/[^0-9A-Z]/g, "");
+
+function makePaper(documento){
+  let seedStr = normDoc(documento) + "|" + CONFIG.semilla;
+  if(!CONFIG.versionPorDocumento){
+    try{ const b = new Uint32Array(2); crypto.getRandomValues(b); seedStr = b[0] + "-" + b[1]; }catch(e){ seedStr = Date.now() + "-" + Math.random(); }
+  }
+  const seed = hashStr(seedStr), r = rng(seed);
+  const picks = BANK.map(slot => {
+    const v = slot.variants[Math.floor(r() * slot.variants.length)];
+    const p = {slot: slot.slot, vid: v.vid};
+    if(slot.type === "mcq") p.order = shuffle(v.options.map((_, k) => k), r);
+    return p;
+  });
+  const items = [];
+  ["mcq","fill","code"].forEach(t => shuffle(picks.filter((p, i) => BANK[i].type === t), r).forEach(p => items.push(p)));
+  return {code: seed.toString(36).toUpperCase().padStart(7, "0").slice(-6), items};
+}
+
+function buildQuestions(paper){
+  return paper.items.map(p => {
+    const slot = BANK.find(s => s.slot === p.slot), v = slot.variants.find(x => x.vid === p.vid);
+    const q = Object.assign({}, v, {id: slot.slot + "-" + v.vid, slot: slot.slot, type: slot.type, pts: slot.pts, tema: slot.tema});
+    if(slot.type === "mcq"){ q.order = p.order; q.options = p.order.map(k => v.options[k]); }
+    return q;
+  });
+}
+
+/* =================== UTILIDADES =================== */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const norm = s => String(s||"").replace(/\s+/g,"");
+const round2 = n => Math.round(n*100)/100;
+const stripHtml = s => String(s).replace(/<[^>]+>/g,"").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&amp;/g,"&");
+const blankIds = q => [...q.template.matchAll(/\{\{(\d+)\}\}/g)].map(m=>m[1]);
+const pad2 = n => String(n).padStart(2,"0");
+function fmtClock(ms){ ms=Math.max(0,ms); const t=Math.floor(ms/1000), h=Math.floor(t/3600), m=Math.floor(t%3600/60), s=t%60; return (h? h+":":"")+pad2(m)+":"+pad2(s); }
+function fmtDur(ms){ const t=Math.round(ms/1000); if(t<60) return t+" s"; const m=Math.floor(t/60), s=t%60; return m+" min "+pad2(s)+" s"; }
+function fmtDate(ts){ try{ return new Date(ts).toLocaleString("es-CO",{dateStyle:"medium",timeStyle:"medium"}); }catch(e){ return new Date(ts).toLocaleString(); } }
+function fmtTime(ts){ try{ return new Date(ts).toLocaleTimeString("es-CO"); }catch(e){ return new Date(ts).toLocaleTimeString(); } }
+
+const KW = new Set(["public","private","protected","class","static","void","final","new","return","if","else","for","while","do","switch","case","break","default","this","null","true","false"]);
+const TYPES = new Set(["int","double","boolean","char","long","float","byte","short"]);
+function hl(src){
+  const re = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*")|('(?:[^'\\\n]|\\.)')|\b([A-Za-z_]\w*)\b|\b(\d+(?:\.\d+)?)\b/g;
+  let out = "", last = 0, m;
+  while((m = re.exec(src))){
+    out += esc(src.slice(last, m.index));
+    if(m[1]) out += '<span class="t-com">'+esc(m[1])+'</span>';
+    else if(m[2] || m[3]) out += '<span class="t-str">'+esc(m[2]||m[3])+'</span>';
+    else if(m[4]){
+      const w = m[4];
+      if(KW.has(w) || TYPES.has(w)) out += '<span class="t-kw">'+w+'</span>';
+      else if(/^[A-Z]/.test(w)) out += '<span class="t-cl">'+w+'</span>';
+      else out += w;
+    }
+    else if(m[5]) out += '<span class="t-num">'+m[5]+'</span>';
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+
+/* =================== ESTADO =================== */
+let state = null;
+let awaySince = null, absenceCounted = false, tickId = null, toastId = null;
+
+function save(){ try{ localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }catch(e){} }
+function load(){ try{ const r = localStorage.getItem(CONFIG.storageKey); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+function clearSaved(){ try{ localStorage.removeItem(CONFIG.storageKey); }catch(e){} }
+const examActive = () => !!(state && state.startedAt && !state.finished);
+
+function answerStatus(q){
+  const a = state.answers[q.id];
+  if(q.type === "mcq") return Number.isInteger(a) ? "done" : "empty";
+  if(q.type === "fill"){
+    const ids = blankIds(q), obj = a || {};
+    const n = ids.filter(id => norm(obj[id])).length;
+    return n === 0 ? "empty" : n === ids.length ? "done" : "partial";
+  }
+  return (a && norm(a) && norm(a) !== norm(q.starter)) ? "done" : "empty";
+}
+const STATUS_LABEL = {done:"Respondida", partial:"Incompleta", empty:"Sin responder"};
+
+function computeScore(){
+  let auto = 0, autoMax = 0, openMax = 0; const det = {};
+  QUESTIONS.forEach(q => {
+    const a = state.answers[q.id];
+    if(q.type === "mcq"){
+      autoMax += q.pts; det[q.id] = (Number.isInteger(a) && a === q.order.indexOf(KEY[q.id])) ? q.pts : 0; auto += det[q.id];
+    } else if(q.type === "fill"){
+      autoMax += q.pts;
+      const k = KEY[q.id], obj = a || {}, ids = Object.keys(k);
+      const ok = ids.filter(id => { const v = norm(obj[id]); return v && k[id].some(x => norm(x) === v); }).length;
+      det[q.id] = round2(q.pts * ok / ids.length); auto += det[q.id];
+    } else { openMax += q.pts; det[q.id] = null; }
+  });
+  return {auto: round2(auto), autoMax, openMax, det};
+}
+
+/* =================== PANTALLAS =================== */
+function show(id){
+  ["screen-start","screen-exam","screen-result"].forEach(s => { $("#"+s).hidden = (s !== id); });
+  window.scrollTo(0,0);
+}
+
+function initStart(){
+  $("#course-label").textContent = CONFIG.curso;
+  $("#rule-tab").innerHTML = "Si sales de esta pestaña o de la ventana por más de <b>"+CONFIG.limiteFueraSeg+" segundos</b>, recibirás una advertencia. Si vuelve a pasar, el parcial <b>se cerrará automáticamente</b> con las preguntas que hayas resuelto hasta ese momento.";
+  $("#rule-paste").hidden = !CONFIG.bloquearPegar;
+  if(CONFIG.duracionMinutos > 0){
+    $("#hm-min").textContent = CONFIG.duracionMinutos;
+    $("#rule-time").innerHTML = '<span class="ico">⏱</span><span>Tienes <b>' + CONFIG.duracionMinutos + ' minutos</b> desde que pulses «Iniciar parcial». El reloj no se detiene si cierras o recargas la página, y al llegar a 0 el parcial se entrega solo con lo que hayas respondido.</span>';
+  } else { $("#rule-time").hidden = true; $("#hm-min").parentElement.hidden = true; }
+  show("screen-start");
+  $("#start-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const nombre = $("#f-nombre").value.trim().replace(/\s+/g," ");
+    const documento = $("#f-doc").value.trim();
+    const grupo = $("#f-grupo").value.trim();
+    const err = $("#form-error");
+    let msg = "";
+    if(nombre.split(" ").length < 2 || nombre.length < 5) msg = "Escribe tu nombre completo (nombre y apellido).";
+    else if(!documento) msg = "Escribe tu documento o código estudiantil.";
+    else if(!$("#f-acepto").checked) msg = "Marca la casilla para confirmar que leíste las condiciones.";
+    if(msg){ err.textContent = msg; err.hidden = false; return; }
+    err.hidden = true;
+    const now = Date.now();
+    const paper = makePaper(documento);
+    QUESTIONS = buildQuestions(paper);
+    state = {v:2, paper, student:{nombre, documento, grupo}, answers:{}, current:0, violations:[], pasteAttempts:0, timeAlerts:{},
+             startedAt:now, lastSeen:now, awaySince:null, pendingWarning:false, finished:false};
+    save();
+    startExam();
+  });
+}
+
+function startExam(){
+  $("#tb-name").textContent = state.student.nombre;
+  $("#tb-doc").textContent = state.student.documento + (state.student.grupo ? " · Grupo " + state.student.grupo : "") + " · Versión " + state.paper.code;
+  $("#clock-label").textContent = CONFIG.duracionMinutos > 0 ? "Quedan" : "Tiempo";
+  $("#chip-clock").classList.toggle("timer", CONFIG.duracionMinutos > 0);
+  show("screen-exam");
+  renderNav(); renderQuestion(); updateFaltas();
+  if(tickId) clearInterval(tickId);
+  tickId = setInterval(tick, 1000);
+  tick();
+}
+
+/* ---------- Índice ---------- */
+function renderNav(){
+  $("#qnav").innerHTML = QUESTIONS.map((q,i) => {
+    const st = answerStatus(q), cur = i === state.current;
+    return '<button type="button" class="qbtn t-'+q.type+' '+st+(cur?' is-current':'')+'" data-i="'+i+'" '+(cur?'aria-current="step" ':'')+
+           'aria-label="Pregunta '+(i+1)+', '+STATUS_LABEL[st]+'"><span>'+(i+1)+'</span><small>'+TYPE_SHORT[q.type]+'</small></button>';
+  }).join("");
+  const n = QUESTIONS.filter(q => answerStatus(q) === "done").length;
+  $("#progress-count").textContent = n + "/" + QUESTIONS.length;
+  $("#progress-bar").style.width = (n / QUESTIONS.length * 100) + "%";
+}
+function refreshNavStatus(){
+  const q = QUESTIONS[state.current];
+  const btn = $('#qnav .qbtn[data-i="'+state.current+'"]');
+  if(btn){ const st = answerStatus(q); btn.classList.remove("done","partial","empty"); btn.classList.add(st); btn.setAttribute("aria-label","Pregunta "+(state.current+1)+", "+STATUS_LABEL[st]); }
+  const n = QUESTIONS.filter(q => answerStatus(q) === "done").length;
+  $("#progress-count").textContent = n + "/" + QUESTIONS.length;
+  $("#progress-bar").style.width = (n / QUESTIONS.length * 100) + "%";
+}
+
+/* ---------- Pregunta ---------- */
+function renderQuestion(){
+  const i = state.current, q = QUESTIONS[i], a = state.answers[q.id];
+  let h = '<div class="qcard-band" aria-hidden="true"></div><div class="qcard-body"><div class="q-meta"><span class="q-num" aria-hidden="true">'+(i+1)+'</span><span class="q-of">PREGUNTA '+(i+1)+' DE '+QUESTIONS.length+'</span>'+
+          '<span class="pill">'+TYPE_LABEL[q.type]+'</span><span class="q-pts">'+q.pts+' pts</span></div>'+
+          '<p class="eyebrow">'+q.tema+'</p><div class="q-prompt">'+q.prompt+'</div>';
+
+  if(q.type === "mcq"){
+    if(q.code) h += '<div class="code-wrap"><div class="code-head"><span class="file">'+esc(q.file||"Main.java")+'</span><span>solo lectura</span></div><pre class="code"><code>'+hl(q.code)+'</code></pre></div>';
+    h += '<fieldset class="options"><legend class="sr">Opciones de respuesta</legend>' + q.options.map((o,k) =>
+      '<label class="opt" for="opt-'+q.id+'-'+k+'"><input type="radio" name="opt-'+q.id+'" id="opt-'+q.id+'-'+k+'" value="'+k+'"'+(a===k?' checked':'')+'>'+
+      '<span class="opt-letter">'+"ABCD"[k]+'</span><span class="opt-text'+(q.mono?' mono':'')+'">'+esc(o)+'</span></label>').join("") + '</fieldset>';
+  }
+  else if(q.type === "fill"){
+    const obj = a || {};
+    const parts = q.template.split(/\{\{(\d+)\}\}/);
+    let code = "";
+    parts.forEach((p,idx) => {
+      if(idx % 2 === 0){ code += hl(p); return; }
+      const w = (q.widths && q.widths[p]) || 8;
+      code += '<input class="blank" id="b-'+q.id+'-'+p+'" data-b="'+p+'" value="'+esc(obj[p]||"")+'" placeholder="('+p+')" style="width:'+(w+2)+'ch" '+
+              'autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Espacio '+p+'">';
+    });
+    h += '<p class="fill-help">Escribe en cada espacio numerado solo lo que falta (una palabra, operador o símbolo).</p>';
+    h += '<div class="code-wrap"><div class="code-head"><span class="file">'+esc(q.file)+'</span><span>'+blankIds(q).length+' espacios</span></div><pre class="code"><code>'+code+'</code></pre></div>';
+  }
+  else {
+    if(q.reqs) h += '<ul class="reqs">'+q.reqs.map(r => '<li><span>'+r+'</span></li>').join("")+'</ul>';
+    if(q.expected) h += '<div class="expected"><b>Salida esperada</b><pre>'+esc(q.expected)+'</pre></div>';
+    const val = (typeof a === "string") ? a : q.starter;
+    h += '<div class="editor"><div class="code-head"><span class="file">'+esc(q.file)+'</span><span>Tab = 4 espacios · Esc y luego Tab para salir del editor</span></div>'+
+         '<div class="editor-body"><pre class="gutter" aria-hidden="true"></pre><textarea id="code-'+q.id+'" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Tu solución en Java">'+esc(val)+'</textarea></div></div>';
+  }
+
+  h += '<div class="qfoot"><button class="btn" type="button" id="btn-prev"'+(i===0?' disabled':'')+'>← Anterior</button>'+
+       '<span class="saved" id="saved">Las respuestas se guardan automáticamente</span>'+
+       (i < QUESTIONS.length-1 ? '<button class="btn btn-primary" type="button" id="btn-next">Siguiente →</button>'
+                               : '<button class="btn btn-primary" type="button" id="btn-finish">Revisar y entregar</button>')+'</div>';
+  h += '</div>';
+  const card = $("#qcard");
+  card.className = "qcard t-" + q.type;
+  card.innerHTML = h;
+  bindQuestion(q, card);
+}
+
+function bindQuestion(q, card){
+  if(q.type === "mcq"){
+    card.querySelectorAll('input[type=radio]').forEach(r => r.addEventListener("change", () => {
+      state.answers[q.id] = Number(r.value); save(); refreshNavStatus();
+    }));
+  } else if(q.type === "fill"){
+    card.querySelectorAll(".blank").forEach(inp => {
+      inp.addEventListener("input", () => {
+        const obj = state.answers[q.id] || (state.answers[q.id] = {});
+        obj[inp.dataset.b] = inp.value; save(); refreshNavStatus();
+      });
+      inp.addEventListener("keydown", e => {
+        if(e.key === "Enter"){ e.preventDefault(); const all=[...card.querySelectorAll(".blank")]; const nx = all[all.indexOf(inp)+1]; if(nx) nx.focus(); }
+      });
+      guardPaste(inp);
+    });
+  } else {
+    const ta = card.querySelector("textarea"), gutter = card.querySelector(".gutter");
+    let escFree = false;
+    const updGutter = () => { const n = ta.value.split("\n").length; let s=""; for(let k=1;k<=n;k++) s += k+"\n"; gutter.textContent = s; gutter.scrollTop = ta.scrollTop; };
+    const insert = t => { ta.setRangeText(t, ta.selectionStart, ta.selectionEnd, "end"); ta.dispatchEvent(new Event("input")); };
+    ta.addEventListener("input", () => { state.answers[q.id] = ta.value; save(); updGutter(); refreshNavStatus(); });
+    ta.addEventListener("scroll", () => { gutter.scrollTop = ta.scrollTop; });
+    ta.addEventListener("keydown", e => {
+      if(e.key === "Escape"){ escFree = true; return; }
+      if(e.key === "Tab" && !escFree && !e.shiftKey){ e.preventDefault(); insert("    "); return; }
+      if(e.key === "Enter" && !e.isComposing){
+        e.preventDefault();
+        const before = ta.value.slice(0, ta.selectionStart);
+        const line = before.slice(before.lastIndexOf("\n")+1);
+        const indent = (line.match(/^[ \t]*/)||[""])[0];
+        insert("\n" + indent + (/\{\s*$/.test(line) ? "    " : ""));
+      }
+      if(e.key !== "Tab") escFree = false;
+    });
+    guardPaste(ta);
+    updGutter();
+  }
+  const prev = $("#btn-prev"), next = $("#btn-next"), fin = $("#btn-finish");
+  if(prev) prev.addEventListener("click", () => go(state.current-1));
+  if(next) next.addEventListener("click", () => go(state.current+1));
+  if(fin) fin.addEventListener("click", confirmFinish);
+}
+
+function guardPaste(el){
+  if(!CONFIG.bloquearPegar) return;
+  const block = e => {
+    e.preventDefault();
+    state.pasteAttempts = (state.pasteAttempts||0) + 1; save();
+    toast("Pegar texto está deshabilitado durante el parcial. El intento quedó registrado.");
+  };
+  el.addEventListener("paste", block);
+  el.addEventListener("drop", block);
+}
+
+function go(i){
+  if(i < 0 || i >= QUESTIONS.length) return;
+  state.current = i; save(); renderNav(); renderQuestion();
+  const top = $("#qcard").getBoundingClientRect().top + window.scrollY - 90;
+  if(window.scrollY > top) window.scrollTo(0, Math.max(0, top));
+}
+
+/* ---------- Reloj y control de pestaña ---------- */
+function tick(){
+  if(!examActive()) return;
+  const now = Date.now();
+  if(awaySince){
+    if(!absenceCounted && now - awaySince > CONFIG.limiteFueraSeg*1000){
+      absenceCounted = true;
+      registerViolation(awaySince, now - awaySince, "Salió de la pestaña o de la ventana del navegador");
+      if(!examActive()) return;
+    }
+  } else {
+    state.lastSeen = now; save();
+  }
+  if(CONFIG.duracionMinutos > 0){
+    const total = CONFIG.duracionMinutos*60000, rem = state.startedAt + total - now;
+    const chip = $("#chip-clock");
+    $("#clock").textContent = fmtClock(rem);
+    $("#tbar").style.width = Math.max(0, Math.min(100, rem / total * 100)) + "%";
+    chip.classList.toggle("warn", rem <= 10*60000 && rem > 5*60000);
+    chip.classList.toggle("bad", rem <= 5*60000);
+    chip.setAttribute("aria-label", "Tiempo restante " + fmtClock(rem));
+    if(rem <= 0){ finalize("tiempo"); return; }
+    state.timeAlerts = state.timeAlerts || {};
+    const alerts = [[10, "Quedan 10 minutos del parcial."], [5, "Quedan 5 minutos. Revisa tus respuestas."], [1, "Queda 1 minuto. Al llegar a 0 el parcial se entrega solo."]];
+    for(const [m, msg] of alerts){
+      if(rem <= m*60000 && !state.timeAlerts[m]){
+        alerts.filter(x => x[0] >= m).forEach(x => { state.timeAlerts[x[0]] = true; });
+        save(); toast(msg); break;
+      }
+    }
+  } else {
+    $("#clock").textContent = fmtClock(now - state.startedAt);
+  }
+}
+
+function registerViolation(start, dur, motivo){
+  state.violations.push({start, dur, motivo});
+  if(state.violations.length >= 2){ finalize("abandono"); }
+  else { state.pendingWarning = true; save(); updateFaltas(); }
+}
+
+function updateFaltas(){
+  const n = state.violations.length, chip = $("#chip-faltas");
+  chip.classList.remove("warn","bad");
+  if(n === 0) $("#faltas").textContent = "Sin advertencias";
+  else { $("#faltas").textContent = "1 advertencia · última oportunidad"; chip.classList.add("warn"); }
+}
+
+function markAway(){
+  if(!examActive() || awaySince) return;
+  awaySince = Date.now(); absenceCounted = false;
+  state.awaySince = awaySince; save();
+}
+function markBack(){
+  if(!awaySince) return;
+  const dur = Date.now() - awaySince;
+  if(state && absenceCounted){ const v = state.violations[state.violations.length-1]; if(v){ v.dur = dur; } }
+  awaySince = null; absenceCounted = false;
+  if(!state) return;
+  state.awaySince = null; state.lastSeen = Date.now(); save();
+  if(!examActive()){ if(state.finished && $("#screen-result").hidden === false) renderResult(); return; }
+  if(state.pendingWarning) showWarning(dur);
+  else if(dur >= 3000) toast("Estuviste fuera de la pestaña "+Math.round(dur/1000)+" s. Más de "+CONFIG.limiteFueraSeg+" s cuenta como falta.");
+}
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "hidden") markAway();
+  else if(document.hasFocus()) markBack();
+});
+window.addEventListener("blur", markAway);
+window.addEventListener("focus", markBack);
+window.addEventListener("pagehide", () => { if(examActive()){ if(!awaySince) state.lastSeen = Date.now(); save(); } });
+window.addEventListener("beforeunload", e => {
+  if(examActive()){ if(!awaySince) state.lastSeen = Date.now(); save(); e.preventDefault(); e.returnValue = ""; }
+});
+
+function showWarning(dur){
+  const v = state.violations[state.violations.length-1];
+  const secs = Math.round((dur || (v && v.dur) || 0)/1000);
+  openModal({
+    tone:"warn", icon:"!",
+    title:"Advertencia: saliste del parcial",
+    html:'<p>Estuviste fuera de la pestaña del parcial durante <b>'+secs+' segundos</b>. El límite es '+CONFIG.limiteFueraSeg+' segundos.</p>'+
+         '<p><b>Esta es tu única advertencia.</b> Si vuelve a pasar, el parcial se cerrará automáticamente y se entregará con las preguntas que hayas resuelto hasta ese momento.</p>',
+    actions:[{label:"Entendido, volver al parcial", primary:true, onClick:() => { state.pendingWarning = false; save(); }}]
+  });
+}
+
+/* ---------- Entrega ---------- */
+function confirmFinish(){
+  const pend = QUESTIONS.map((q,i) => ({q,i,st:answerStatus(q)})).filter(x => x.st !== "done");
+  const list = pend.length
+    ? '<p>Tienes <b>'+pend.length+' pregunta'+(pend.length>1?'s':'')+'</b> sin completar: '+pend.map(x => (x.i+1)).join(", ")+'.</p>'
+    : '<p>Respondiste las 12 preguntas.</p>';
+  openModal({
+    title:"¿Entregar el parcial?",
+    html: list + (CONFIG.duracionMinutos > 0 ? '<p>Te quedan <b>' + fmtClock(state.startedAt + CONFIG.duracionMinutos*60000 - Date.now()) + '</b> minutos.</p>' : '') + '<p>Después de entregar no podrás cambiar tus respuestas. Luego descargarás el PDF para subirlo al sistema.</p>',
+    actions:[{label:"Seguir respondiendo"},{label:"Entregar parcial", primary:true, onClick:() => finalize("entregado")}]
+  });
+}
+
+function finalize(reason){
+  if(!state || state.finished) return;
+  state.finished = true; state.finishReason = reason; state.finishedAt = Date.now();
+  state.pendingWarning = false;
+  save();
+  if(tickId){ clearInterval(tickId); tickId = null; }
+  closeModal();
+  renderResult();
+}
+
+const REASON = {
+  entregado:{tone:"ok", title:"Parcial entregado", text:"Entregaste el parcial. Descarga el PDF y súbelo al sistema.", pdf:"Entregado por el estudiante"},
+  abandono:{tone:"bad", title:"Parcial cerrado por salir de la pestaña", text:"Saliste de la pestaña por segunda vez por más de "+CONFIG.limiteFueraSeg+" segundos. El parcial se cerró con las respuestas que tenías hasta ese momento. Descarga el PDF y súbelo al sistema.", pdf:"Cerrado automáticamente: segunda salida de la pestaña"},
+  tiempo:{tone:"warn", title:"Se acabó el tiempo", text:"El tiempo del parcial terminó y tus respuestas se entregaron automáticamente. Descarga el PDF y súbelo al sistema.", pdf:"Cerrado automáticamente: tiempo agotado"}
+};
+
+function renderResult(){
+  const S = computeScore(), R = REASON[state.finishReason] || REASON.entregado;
+  const answered = QUESTIONS.filter(q => answerStatus(q) === "done").length;
+  const st = state.student;
+  let h = '<div class="status '+R.tone+'"><h1>'+R.title+'</h1><p>'+R.text+'</p></div>';
+  h += '<div class="stats">'+
+       '<div class="stat"><b>'+answered+'/'+QUESTIONS.length+'</b><span>Preguntas respondidas</span></div>'+
+       (CONFIG.mostrarPuntajeAutomatico ? '<div class="stat"><b>'+S.auto+'/'+S.autoMax+'</b><span>Puntaje automático (1–9)</span></div>'
+                                        : '<div class="stat"><b>—</b><span>Puntaje de 1–9 lo publica el docente</span></div>')+
+       '<div class="stat"><b>'+S.openMax+' pts</b><span>Preguntas 10–12: las califica el docente</span></div>'+
+       '<div class="stat"><b>'+fmtClock(state.finishedAt - state.startedAt)+'</b><span>Duración</span></div></div>';
+  h += '<div class="download"><p><b>'+esc(st.nombre)+'</b> · '+esc(st.documento)+(st.grupo?' · Grupo '+esc(st.grupo):'')+'<br>Entregado el '+esc(fmtDate(state.finishedAt))+'</p>'+
+       '<button class="btn btn-primary btn-lg" type="button" id="btn-pdf">Descargar PDF</button></div>';
+  h += '<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Tema</th><th>Tipo</th><th>Estado</th></tr></thead><tbody>'+
+       QUESTIONS.map((q,i) => { const s = answerStatus(q); return '<tr class="t-'+q.type+'"><td class="n"><span>'+(i+1)+'</span></td><td>'+esc(q.tema)+'</td><td><span class="pill">'+TYPE_LABEL[q.type]+'</span></td><td><span class="tag '+s+'">'+STATUS_LABEL[s]+'</span></td></tr>'; }).join("")+
+       '</tbody></table></div>';
+  if(state.violations.length || state.pasteAttempts){
+    h += '<div class="log"><h2>Registro de integridad</h2><ul>'+
+         state.violations.map((v,k) => '<li>Salida '+(k+1)+': '+esc(fmtTime(v.start))+' · '+fmtDur(v.dur)+' fuera · '+esc(v.motivo)+'</li>').join("")+
+         (state.pasteAttempts ? '<li>Intentos de pegar texto: '+state.pasteAttempts+'</li>' : '')+'</ul></div>';
+  }
+  $("#screen-result").innerHTML = h;
+  show("screen-result");
+  $("#btn-pdf").addEventListener("click", downloadPdf);
+}
+
+/* =================== PDF =================== */
+function san(s){
+  return String(s == null ? "" : s)
+    .replace(/[—–]/g,"-").replace(/[“”]/g,'"').replace(/[‘’]/g,"'")
+    .replace(/→/g,"->").replace(/←/g,"<-").replace(/≥/g,">=").replace(/≤/g,"<=").replace(/…/g,"...")
+    .replace(/\r/g,"").replace(/[^\t\n\x20-\x7E\xA0-\xFF]/g,"?");
+}
+function fileName(){
+  const base = (state.student.nombre + "_" + state.student.documento).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_|_$/g,"");
+  return "Parcial_JavaPOO_" + base + ".pdf";
+}
+
+function downloadPdf(){
+  if(!(window.jspdf && window.jspdf.jsPDF)){ printFallback(); return; }
+  try{ buildPdf().save(fileName()); toast("PDF descargado. Súbelo al sistema."); }
+  catch(e){ console.error(e); printFallback(); }
+}
+
+function buildPdf(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:"mm", format:"a4"});
+  const W = 210, H = 297, M = 16, CW = W - 2*M, PT = 0.3528, BOTTOM = H - M - 6;
+  const INK = [29,42,31], MUTED = [93,107,95], ACCENT = [80,140,70];
+  const PALETTE = [[80,140,70],[22,186,175],[8,175,230],[103,82,160],[248,159,50],[255,204,41],[226,47,107],[144,106,172]];
+  const TYPE_RGB = {mcq:[8,175,230], fill:[248,159,50], code:[103,82,160]};
+  const TYPE_INK = {mcq:[3,114,154], fill:[153,83,0], code:[90,71,144]};
+  let BAR = ACCENT;
+  const S = computeScore(), R = REASON[state.finishReason] || REASON.entregado, st = state.student;
+  let y = M;
+
+  const lh = (size, f) => size * PT * (f || 1.4);
+  const newPage = () => { doc.addPage(); y = M; };
+  const ensure = h => { if(y + h > BOTTOM) newPage(); };
+  function para(str, o){
+    o = o || {};
+    const size = o.size || 10, x = M + (o.indent || 0);
+    doc.setFont(o.font || "helvetica", o.style || "normal"); doc.setFontSize(size); doc.setTextColor.apply(doc, o.color || INK);
+    const lines = doc.splitTextToSize(san(str), CW - (o.indent || 0));
+    const h = lh(size);
+    lines.forEach(l => { ensure(h); doc.setFont(o.font || "helvetica", o.style || "normal"); doc.setFontSize(size); doc.setTextColor.apply(doc, o.color || INK);
+      doc.text(l, x, y, {baseline:"top"}); y += h; });
+    y += (o.after == null ? 1.5 : o.after);
+  }
+  function kv(label, value){
+    const size = 9.5, h = lh(size), lw = 42;
+    doc.setFont("helvetica","normal"); doc.setFontSize(size);
+    const lines = doc.splitTextToSize(san(value), CW - lw);
+    ensure(h * lines.length);
+    doc.setFont("helvetica","bold"); doc.setTextColor.apply(doc, MUTED); doc.text(san(label), M, y, {baseline:"top"});
+    doc.setFont("helvetica","normal"); doc.setTextColor.apply(doc, INK);
+    lines.forEach((l,k) => doc.text(l, M + lw, y + k*h, {baseline:"top"}));
+    y += h * lines.length + 0.6;
+  }
+  function codeBlock(src){
+    const size = 8.4, h = lh(size, 1.32), pad = 3, charW = size * PT * 0.6;
+    const maxC = Math.max(20, Math.floor((CW - 2*pad - 1) / charW));
+    const lines = [];
+    san(String(src).replace(/\t/g,"    ")).split("\n").forEach(l => {
+      if(!l.length){ lines.push(""); return; }
+      let rest = l, first = true;
+      while(rest.length){ const n = first ? maxC : maxC - 2; lines.push((first ? "" : "  ") + rest.slice(0,n)); rest = rest.slice(n); first = false; }
+    });
+    y += 0.5;
+    lines.forEach(l => {
+      if(y + h > BOTTOM) newPage();
+      doc.setFillColor(243,245,248); doc.rect(M, y, CW, h, "F");
+      doc.setFillColor.apply(doc, BAR); doc.rect(M, y, 1, h, "F");
+      doc.setFont("courier","normal"); doc.setFontSize(size); doc.setTextColor(25,28,34);
+      doc.text(l, M + pad, y + h*0.16, {baseline:"top"});
+      y += h;
+    });
+    y += 3;
+  }
+  function rule(){ ensure(4); doc.setDrawColor(214,221,230); doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 4; }
+
+  /* Encabezado */
+  const segW = W / PALETTE.length;
+  PALETTE.forEach((c,k) => { doc.setFillColor.apply(doc, c); doc.rect(k*segW, 0, segW + 0.2, 4, "F"); });
+  doc.setFillColor.apply(doc, ACCENT); doc.circle(W - M - 6, M + 7, 7, "F");
+  doc.setFillColor(255,204,41); doc.circle(W - M + 1, M + 13, 4, "F");
+  doc.setFont("courier","bold"); doc.setFontSize(10); doc.setTextColor(255,255,255); doc.text("</>", W - M - 6, M + 7, {align:"center", baseline:"middle"});
+  y = M;
+  para(CONFIG.curso.toUpperCase(), {size:8.5, style:"bold", color:ACCENT, after:0.5});
+  para(CONFIG.titulo, {size:16, style:"bold", after:3});
+
+  kv("Estudiante", st.nombre);
+  kv("Documento / código", st.documento);
+  if(st.grupo) kv("Grupo", st.grupo);
+  kv("Inicio", fmtDate(state.startedAt));
+  kv("Entrega", fmtDate(state.finishedAt));
+  kv("Duración", fmtClock(state.finishedAt - state.startedAt));
+  kv("Versión del parcial", state.paper.code + "  (" + QUESTIONS.map(q => q.id).join(" ") + ")");
+  if(CONFIG.duracionMinutos > 0) kv("Tiempo asignado", CONFIG.duracionMinutos + " min");
+  kv("Estado", R.pdf);
+  kv("Salidas de pestaña", state.violations.length ? state.violations.length + " (límite " + CONFIG.limiteFueraSeg + " s)" : "Ninguna registrada");
+  state.violations.forEach((v,k) => kv("   Salida " + (k+1), fmtTime(v.start) + " - " + fmtDur(v.dur) + " fuera - " + v.motivo));
+  if(CONFIG.bloquearPegar) kv("Intentos de pegar", String(state.pasteAttempts || 0));
+  y += 3;
+
+  /* Caja de puntaje */
+  ensure(26);
+  const bx = M, by = y, bw = CW, bh = 22, colW = bw / 3;
+  doc.setDrawColor(80,140,70); doc.setLineWidth(0.5); doc.roundedRect(bx, by, bw, bh, 2, 2, "S");
+  doc.line(bx + colW, by + 3, bx + colW, by + bh - 3); doc.line(bx + 2*colW, by + 3, bx + 2*colW, by + bh - 3);
+  const cell = (k, label, value) => {
+    doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor.apply(doc, MUTED);
+    doc.text(san(label), bx + k*colW + 4, by + 4, {baseline:"top"});
+    doc.setFont("helvetica","bold"); doc.setFontSize(14); doc.setTextColor.apply(doc, INK);
+    doc.text(san(value), bx + k*colW + 4, by + 11, {baseline:"top"});
+  };
+  cell(0, "Preguntas 1-9 (automático)", CONFIG.mostrarPuntajeAutomatico ? S.auto + " / " + S.autoMax : "____ / " + S.autoMax);
+  cell(1, "Preguntas 10-12 (docente)", "____ / " + S.openMax);
+  cell(2, "Nota final", "______");
+  y = by + bh + 6;
+
+  /* Preguntas */
+  QUESTIONS.forEach((q,i) => {
+    rule();
+    ensure(18);
+    BAR = TYPE_RGB[q.type];
+    ensure(8);
+    doc.setFillColor.apply(doc, BAR); doc.circle(M + 3.2, y + 2.6, 3.2, "F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor.apply(doc, q.type === "fill" ? INK : [255,255,255]);
+    doc.text(String(i+1), M + 3.2, y + 2.7, {align:"center", baseline:"middle"});
+    doc.setFontSize(11); doc.setTextColor.apply(doc, INK);
+    doc.text(san("Pregunta " + (i+1) + "  -  " + q.pts + " pts"), M + 9, y + 0.2, {baseline:"top"});
+    doc.setFontSize(8); doc.setTextColor.apply(doc, TYPE_INK[q.type]);
+    doc.text(san(TYPE_LABEL[q.type].toUpperCase() + "  ·  BANCO " + q.id), W - M, y + 0.8, {baseline:"top", align:"right"});
+    y += 7;
+    para(q.tema, {size:8.5, color:TYPE_INK[q.type], after:1.2});
+    para(stripHtml(q.prompt), {size:9.5, after:1.5});
+    const a = state.answers[q.id];
+    if(q.type === "mcq"){
+      if(q.code) codeBlock(q.code);
+      q.options.forEach((o,k) => para("   " + "ABCD"[k] + ") " + o, {size:9, color: a===k ? INK : MUTED, style: a===k ? "bold":"normal", after:0.2}));
+      y += 1.5;
+      para("Respuesta del estudiante: " + (Number.isInteger(a) ? "ABCD"[a] + ") " + q.options[a] : "(sin responder)"), {size:10, style:"bold", color:ACCENT});
+    } else if(q.type === "fill"){
+      const obj = a || {};
+      const filled = q.template.replace(/\{\{(\d+)\}\}/g, (m,id) => norm(obj[id]) ? "[" + String(obj[id]).trim() + "]" : "[_____]");
+      para("Código completado por el estudiante (sus respuestas aparecen entre corchetes):", {size:8.5, color:MUTED, after:0.5});
+      codeBlock(filled);
+      para("Respuestas: " + blankIds(q).map(id => "(" + id + ") " + (norm(obj[id]) ? String(obj[id]).trim() : "sin responder")).join("   "), {size:9});
+    } else {
+      if(q.reqs) q.reqs.forEach(r => para("- " + stripHtml(r), {size:8.8, color:MUTED, indent:2, after:0.2}));
+      y += 1.5;
+      para("Solución del estudiante:", {size:9, style:"bold", after:0.5});
+      codeBlock(answerStatus(q) === "done" ? a : "(sin responder)");
+      para("Calificación docente: ______ / " + q.pts, {size:9.5, style:"bold"});
+    }
+    if(CONFIG.detallePorPreguntaEnPDF && S.det[q.id] != null) para("Puntaje automático: " + S.det[q.id] + " / " + q.pts, {size:9, style:"bold"});
+  });
+
+  /* Pie de página */
+  const total = doc.getNumberOfPages();
+  for(let p = 1; p <= total; p++){
+    doc.setPage(p);
+    doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor.apply(doc, MUTED);
+    doc.text(san(st.nombre + " - " + st.documento + " - generado " + fmtDate(Date.now())), M, H - 9);
+    doc.text("Página " + p + " de " + total, W - M, H - 9, {align:"right"});
+  }
+  return doc;
+}
+
+/* Alternativa si la librería de PDF no cargó (sin internet): imprimir → Guardar como PDF */
+function printFallback(){
+  const S = computeScore(), R = REASON[state.finishReason] || REASON.entregado, st = state.student;
+  let h = '<h1>'+esc(CONFIG.titulo)+'</h1><p>'+esc(CONFIG.curso)+'</p>'+
+    '<p><b>Estudiante:</b> '+esc(st.nombre)+' · <b>Documento:</b> '+esc(st.documento)+' · <b>Versión:</b> '+esc(state.paper.code)+(st.grupo?' · <b>Grupo:</b> '+esc(st.grupo):'')+'<br>'+
+    '<b>Inicio:</b> '+esc(fmtDate(state.startedAt))+' · <b>Entrega:</b> '+esc(fmtDate(state.finishedAt))+'<br><b>Estado:</b> '+esc(R.pdf)+
+    ' · <b>Salidas de pestaña:</b> '+state.violations.length+(CONFIG.bloquearPegar?' · <b>Intentos de pegar:</b> '+(state.pasteAttempts||0):'')+'<br>'+
+    '<b>Preguntas 1-9:</b> '+(CONFIG.mostrarPuntajeAutomatico? S.auto+' / '+S.autoMax : '____ / '+S.autoMax)+' · <b>Preguntas 10-12:</b> ____ / '+S.openMax+' · <b>Nota final:</b> ______</p>';
+  QUESTIONS.forEach((q,i) => {
+    const a = state.answers[q.id];
+    h += '<div class="q"><h2>Pregunta '+(i+1)+' · '+TYPE_LABEL[q.type]+' · '+q.pts+' pts · Banco '+q.id+'</h2><p>'+esc(stripHtml(q.prompt))+'</p>';
+    if(q.type === "mcq"){
+      if(q.code) h += '<pre>'+esc(q.code)+'</pre>';
+      h += '<p><b>Respuesta:</b> '+(Number.isInteger(a) ? "ABCD"[a]+') '+esc(q.options[a]) : '(sin responder)')+'</p>';
+    } else if(q.type === "fill"){
+      const obj = a || {};
+      h += '<pre>'+esc(q.template.replace(/\{\{(\d+)\}\}/g,(m,id) => norm(obj[id]) ? "["+String(obj[id]).trim()+"]" : "[_____]"))+'</pre>';
+    } else {
+      h += '<pre>'+esc(answerStatus(q)==="done" ? a : "(sin responder)")+'</pre><p><b>Calificación docente:</b> ______ / '+q.pts+'</p>';
+    }
+    h += '</div>';
+  });
+  $("#print-area").innerHTML = h;
+  openModal({
+    icon:"↓", title:"Guarda el resultado como PDF",
+    html:'<p>No se pudo generar el PDF directamente (puede que no haya conexión a internet). Se abrirá la ventana de impresión: en <b>Destino</b> elige <b>Guardar como PDF</b>.</p>',
+    actions:[{label:"Abrir impresión", primary:true, onClick:() => setTimeout(() => window.print(), 50)}]
+  });
+}
+
+/* =================== MODAL Y AVISOS =================== */
+let lastFocus = null;
+function openModal(o){
+  lastFocus = document.activeElement;
+  const root = $("#modal-root");
+  root.innerHTML = '<div class="overlay"><div class="modal '+(o.tone||"")+'" role="dialog" aria-modal="true" aria-labelledby="m-title"><div class="stripe" aria-hidden="true"></div><div class="modal-body">'+
+    '<div class="modal-ico" aria-hidden="true">'+(o.icon||"?")+'</div><h2 id="m-title">'+o.title+'</h2>'+o.html+'<div class="actions">'+
+    o.actions.map((a,k) => '<button type="button" class="btn'+(a.primary?' btn-primary':'')+'" data-k="'+k+'">'+a.label+'</button>').join("")+'</div></div></div></div>';
+  root.querySelectorAll("button[data-k]").forEach(b => b.addEventListener("click", () => {
+    const a = o.actions[Number(b.dataset.k)];
+    closeModal();
+    if(a.onClick) a.onClick();
+  }));
+  const primary = root.querySelector(".btn-primary") || root.querySelector("button");
+  if(primary) primary.focus();
+}
+function closeModal(){
+  $("#modal-root").innerHTML = "";
+  if(lastFocus && document.body.contains(lastFocus)) try{ lastFocus.focus(); }catch(e){}
+}
+function toast(msg){
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastId); toastId = setTimeout(() => { t.hidden = true; }, 4500);
+}
+
+/* =================== ARRANQUE =================== */
+$("#qnav").addEventListener("click", e => { const b = e.target.closest(".qbtn"); if(b) go(Number(b.dataset.i)); });
+$("#btn-finish-side").addEventListener("click", confirmFinish);
+
+function boot(){
+  if(location.hash === "#reiniciar"){
+    clearSaved();
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  state = load();
+  if(!state || !state.startedAt || !state.paper){ state = null; initStart(); return; }
+  QUESTIONS = buildQuestions(state.paper);
+  if(state.finished){ renderResult(); return; }
+  // Reanudar un intento en curso (recarga o cierre de la pestaña)
+  const ref = state.awaySince || state.lastSeen || Date.now();
+  const gap = Date.now() - ref;
+  startExam();
+  if(examActive() && gap > CONFIG.limiteFueraSeg*1000){
+    registerViolation(ref, gap, "Cerró, recargó o abandonó la página del parcial");
+  }
+  if(examActive()){
+    state.awaySince = null; state.lastSeen = Date.now(); save();
+    if(state.pendingWarning) showWarning();
+  }
+}
+boot();
+})();
+</script>
+</body>
+</html>
