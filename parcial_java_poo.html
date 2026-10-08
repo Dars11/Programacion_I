@@ -290,6 +290,15 @@ td .pill{white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1d2a1f;color:#fff;border-left:6px solid var(--amarillo);
   padding:11px 16px;border-radius:12px;font-size:.94rem;max-width:min(92vw,560px);z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 
+/* Protección de capturas */
+#shield{display:none;position:fixed;inset:0;z-index:45;background:color-mix(in srgb,var(--bg) 70%,transparent);place-items:center;padding:16px;cursor:pointer}
+body.shielded #shield{display:grid}
+body.shielded #screen-exam .exam{filter:blur(18px) saturate(.4);opacity:.25}
+.shield-box{background:var(--surface);border-radius:18px;padding:22px 26px;max-width:440px;text-align:center;box-shadow:var(--shadow);border-top:6px solid var(--morado)}
+.shield-box p{margin:0;font-weight:600}
+.shield-ico{width:46px;height:46px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;background:var(--morado);color:#fff;font-size:1.4rem}
+.qcard{position:relative}
+.qcard::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--wm,none);background-repeat:repeat;z-index:3;border-radius:inherit}
 /* Cronómetro */
 .chip.timer{background:var(--primary-soft);border-color:transparent;color:var(--ok);font-size:.85rem;padding:.35em .9em .35em .5em;gap:8px}
 .chip.timer b{font:700 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
@@ -332,6 +341,7 @@ td .pill{white-space:nowrap}
 @media print{
   body{background:#fff;color:#000}
   body > *:not(#print-area){display:none!important}
+  body.shielded #print-area{display:none!important}
   #print-area{display:block!important;font:11pt/1.45 var(--f-sans);color:#000}
   #print-area pre{white-space:pre-wrap;font:9pt/1.4 var(--f-mono);background:#f3f6f1;border-left:3px solid #508C46;padding:6px 8px;margin:4px 0 10px}
   #print-area h1{font-size:16pt;margin:0 0 4px;color:#508C46}
@@ -387,6 +397,7 @@ td .pill{white-space:nowrap}
           <li class="is-time" id="rule-time"><span class="ico">⏱</span><span>Tienes <b>45 minutos</b> desde que pulses «Iniciar parcial». El reloj no se detiene si cierras o recargas la página, y al llegar a 0 el parcial se entrega solo con lo que hayas respondido.</span></li>
           <li><span class="ico">2</span><span>En <b>completar código</b> cada espacio vale lo mismo, así que hay puntaje parcial. En <b>escribir código</b> el docente califica tu solución completa.</span></li>
           <li class="is-alert"><span class="ico">!</span><span id="rule-tab">Si sales de esta pestaña o de la ventana por más de <b>15 segundos</b>, recibirás una advertencia. Si vuelve a pasar, el parcial <b>se cerrará automáticamente</b> con las preguntas que hayas resuelto hasta ese momento.</span></li>
+          <li class="is-alert" id="rule-capture"><span class="ico">!</span><span>Las <b>capturas y recortes de pantalla no están permitidos</b>. Si se intentan, el contenido se oculta y queda registrado. Cada pregunta lleva una marca de agua con tu nombre y documento. Puedes copiar texto, pero no pegar en las respuestas.</span></li>
           <li class="is-alert" id="rule-paste"><span class="ico">!</span><span>Pegar texto está deshabilitado en las respuestas. Los intentos quedan registrados.</span></li>
           <li><span class="ico">3</span><span>Al terminar, descarga el <b>PDF con tus respuestas</b> y súbelo al sistema. Presenta el parcial completo en el mismo equipo y navegador.</span></li>
         </ul>
@@ -409,7 +420,7 @@ td .pill{white-space:nowrap}
             <label for="f-grupo">Grupo (opcional)</label>
             <input id="f-grupo" name="grupo" maxlength="30" placeholder="Ej. POO-02">
           </div>
-          <label class="check" for="f-acepto"><input type="checkbox" id="f-acepto"><span>Leí las condiciones y entiendo que salir de la pestaña más de una vez cierra el parcial.</span></label>
+          <label class="check" for="f-acepto"><input type="checkbox" id="f-acepto"><span id="acepto-text">Leí las condiciones y entiendo que salir de la pestaña más de una vez cierra el parcial.</span></label>
           <p class="form-error" id="form-error" hidden></p>
           <button class="btn btn-primary btn-lg" type="submit">Iniciar parcial</button>
         </div>
@@ -458,6 +469,7 @@ td .pill{white-space:nowrap}
 <!-- ================= PANTALLA DE RESULTADO ================= -->
 <main id="screen-result" class="wrap result" hidden></main>
 
+<div id="shield" role="alert"><div class="shield-box"><div class="shield-ico" aria-hidden="true">◐</div><p id="shield-msg">El contenido se oculta mientras la ventana del parcial no está activa.</p></div></div>
 <div id="modal-root"></div>
 <div id="toast" class="toast" role="status" hidden></div>
 <div id="print-area"></div>
@@ -474,10 +486,12 @@ const CONFIG = {
   duracionMinutos: 45,         // duración del parcial; al llegar a 0 se entrega solo (0 = sin límite)
   versionPorDocumento: true,   // true = la versión depende del documento: el mismo estudiante siempre recibe la misma
   semilla: "POO-2026-2",       // cámbiala para generar versiones nuevas en otro grupo o semestre
-  bloquearPegar: true,         // impide pegar texto en las respuestas
+  bloquearPegar: true,         // impide pegar texto en las respuestas (copiar sí está permitido)
+  controlPestana: false,       // true = vuelve a activar la regla de salir de la pestaña (advertencia y cierre)
+  protegerCapturas: true,      // oculta el contenido al intentar capturas y pone marca de agua con el nombre
   mostrarPuntajeAutomatico: true, // muestra el puntaje de las preguntas cerradas (1–9) al estudiante y en el PDF
   detallePorPreguntaEnPDF: false, // true = el PDF muestra el puntaje automático de cada pregunta
-  storageKey: "parcial-java-poo-v2"
+  storageKey: "parcial-java-poo-v3"
 };
 
 const TYPE_LABEL = {mcq:"Selección múltiple", fill:"Completar código", code:"Escribir código"};
@@ -601,7 +615,9 @@ function show(id){
 
 function initStart(){
   $("#course-label").textContent = CONFIG.curso;
-  $("#rule-tab").innerHTML = "Si sales de esta pestaña o de la ventana por más de <b>"+CONFIG.limiteFueraSeg+" segundos</b>, recibirás una advertencia. Si vuelve a pasar, el parcial <b>se cerrará automáticamente</b> con las preguntas que hayas resuelto hasta ese momento.";
+  if(!CONFIG.controlPestana){ $("#rule-tab").parentElement.hidden = true; $("#acepto-text").textContent = "Leí las condiciones del parcial y me comprometo a presentarlo de forma individual."; }
+  $("#rule-capture").hidden = !CONFIG.protegerCapturas;
+  if(CONFIG.controlPestana) $("#rule-tab").innerHTML = "Si sales de esta pestaña o de la ventana por más de <b>"+CONFIG.limiteFueraSeg+" segundos</b>, recibirás una advertencia. Si vuelve a pasar, el parcial <b>se cerrará automáticamente</b> con las preguntas que hayas resuelto hasta ese momento.";
   $("#rule-paste").hidden = !CONFIG.bloquearPegar;
   if(CONFIG.duracionMinutos > 0){
     $("#hm-min").textContent = CONFIG.duracionMinutos;
@@ -636,7 +652,8 @@ function startExam(){
   $("#clock-label").textContent = CONFIG.duracionMinutos > 0 ? "Quedan" : "Tiempo";
   $("#chip-clock").classList.toggle("timer", CONFIG.duracionMinutos > 0);
   show("screen-exam");
-  renderNav(); renderQuestion(); updateFaltas();
+  renderNav(); renderQuestion(); updateFaltas(); setWatermark();
+  $("#chip-faltas").hidden = !CONFIG.controlPestana;
   if(tickId) clearInterval(tickId);
   tickId = setInterval(tick, 1000);
   tick();
@@ -818,7 +835,7 @@ function updateFaltas(){
 }
 
 function markAway(){
-  if(!examActive() || awaySince) return;
+  if(!CONFIG.controlPestana || !examActive() || awaySince) return;
   awaySince = Date.now(); absenceCounted = false;
   state.awaySince = awaySince; save();
 }
@@ -834,11 +851,63 @@ function markBack(){
   else if(dur >= 3000) toast("Estuviste fuera de la pestaña "+Math.round(dur/1000)+" s. Más de "+CONFIG.limiteFueraSeg+" s cuenta como falta.");
 }
 document.addEventListener("visibilitychange", () => {
-  if(document.visibilityState === "hidden") markAway();
-  else if(document.hasFocus()) markBack();
+  if(document.visibilityState === "hidden"){ markAway(); shieldOn("ventana"); }
+  else if(document.hasFocus()){ markBack(); shieldOff(); }
 });
-window.addEventListener("blur", markAway);
-window.addEventListener("focus", markBack);
+window.addEventListener("blur", () => { markAway(); shieldOn("ventana"); });
+window.addEventListener("focus", () => { markBack(); shieldOff(); });
+
+/* ---------- Protección contra capturas de pantalla ----------
+   Un navegador no puede bloquear del todo las capturas del sistema operativo.
+   Lo que sí hace: ocultar el contenido cuando la ventana pierde el foco (la herramienta
+   de recortes lo provoca), reaccionar a las teclas de captura, impedir imprimir y
+   poner una marca de agua con los datos del estudiante en cada pregunta. */
+let shieldTimer = null;
+function shieldOn(reason){
+  if(!CONFIG.protegerCapturas || !examActive()) return;
+  document.body.classList.add("shielded");
+  $("#shield-msg").textContent = reason === "captura"
+    ? "Las capturas de pantalla no están permitidas durante el parcial. El intento quedó registrado."
+    : "El contenido se oculta mientras la ventana del parcial no está activa. Haz clic aquí para continuar.";
+  clearTimeout(shieldTimer);
+  if(reason === "captura") shieldTimer = setTimeout(() => { if(document.hasFocus()) shieldOff(); }, 2500);
+}
+function shieldOff(){ clearTimeout(shieldTimer); document.body.classList.remove("shielded"); }
+let lastCapture = 0;
+function logCapture(kind){
+  if(!examActive()) return;
+  shieldOn("captura");
+  const now = Date.now(); if(now - lastCapture < 1500) return; lastCapture = now;
+  state.captureAttempts = (state.captureAttempts || 0) + 1; save();
+  shieldOn("captura");
+  try{ if(navigator.clipboard) navigator.clipboard.writeText("Captura de pantalla no permitida durante el parcial.").catch(() => {}); }catch(e){}
+}
+function isCaptureCombo(e){
+  const k = (e.key || "").toLowerCase();
+  if(e.key === "PrintScreen" || e.code === "PrintScreen") return true;
+  if((e.metaKey || e.ctrlKey) && e.shiftKey && ["s","3","4","5"].includes(k)) return true;   // Win+Shift+S, Cmd+Shift+3/4/5
+  return false;
+}
+document.addEventListener("keydown", e => {
+  if(!CONFIG.protegerCapturas || !examActive()) return;
+  if(isCaptureCombo(e)){ e.preventDefault(); logCapture(); return; }
+  if((e.ctrlKey || e.metaKey) && (e.key || "").toLowerCase() === "p"){ e.preventDefault(); toast("Imprimir no está permitido durante el parcial."); }
+}, true);
+document.addEventListener("keyup", e => {
+  if(!CONFIG.protegerCapturas || !examActive()) return;
+  if(e.key === "PrintScreen" || e.code === "PrintScreen"){ e.preventDefault(); logCapture(); }
+}, true);
+document.addEventListener("contextmenu", e => { if(CONFIG.protegerCapturas && examActive() && !e.target.closest("textarea, input")) e.preventDefault(); });
+window.addEventListener("beforeprint", () => { if(CONFIG.protegerCapturas && examActive()) document.body.classList.add("shielded"); });
+window.addEventListener("afterprint", () => { if(document.hasFocus()) shieldOff(); });
+
+function setWatermark(){
+  if(!CONFIG.protegerCapturas || !state) return;
+  const t = (state.student.nombre + " · " + state.student.documento + " · " + state.paper.code).replace(/[<>&"]/g, "");
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="220"><text x="0" y="130" transform="rotate(-24 210 110)" '+
+              'font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#808080" fill-opacity="0.16">' + t + '</text></svg>';
+  document.documentElement.style.setProperty("--wm", 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")');
+}
 window.addEventListener("pagehide", () => { if(examActive()){ if(!awaySince) state.lastSeen = Date.now(); save(); } });
 window.addEventListener("beforeunload", e => {
   if(examActive()){ if(!awaySince) state.lastSeen = Date.now(); save(); e.preventDefault(); e.returnValue = ""; }
@@ -901,10 +970,11 @@ function renderResult(){
   h += '<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Tema</th><th>Tipo</th><th>Estado</th></tr></thead><tbody>'+
        QUESTIONS.map((q,i) => { const s = answerStatus(q); return '<tr class="t-'+q.type+'"><td class="n"><span>'+(i+1)+'</span></td><td>'+esc(q.tema)+'</td><td><span class="pill">'+TYPE_LABEL[q.type]+'</span></td><td><span class="tag '+s+'">'+STATUS_LABEL[s]+'</span></td></tr>'; }).join("")+
        '</tbody></table></div>';
-  if(state.violations.length || state.pasteAttempts){
+  if(state.violations.length || state.pasteAttempts || state.captureAttempts){
     h += '<div class="log"><h2>Registro de integridad</h2><ul>'+
          state.violations.map((v,k) => '<li>Salida '+(k+1)+': '+esc(fmtTime(v.start))+' · '+fmtDur(v.dur)+' fuera · '+esc(v.motivo)+'</li>').join("")+
-         (state.pasteAttempts ? '<li>Intentos de pegar texto: '+state.pasteAttempts+'</li>' : '')+'</ul></div>';
+         (state.pasteAttempts ? '<li>Intentos de pegar texto: '+state.pasteAttempts+'</li>' : '')+
+         (state.captureAttempts ? '<li>Intentos de captura de pantalla detectados: '+state.captureAttempts+'</li>' : '')+'</ul></div>';
   }
   $("#screen-result").innerHTML = h;
   show("screen-result");
@@ -1005,9 +1075,10 @@ function buildPdf(){
   kv("Versión del parcial", state.paper.code + "  (" + QUESTIONS.map(q => q.id).join(" ") + ")");
   if(CONFIG.duracionMinutos > 0) kv("Tiempo asignado", CONFIG.duracionMinutos + " min");
   kv("Estado", R.pdf);
-  kv("Salidas de pestaña", state.violations.length ? state.violations.length + " (límite " + CONFIG.limiteFueraSeg + " s)" : "Ninguna registrada");
+  if(CONFIG.controlPestana) kv("Salidas de pestaña", state.violations.length ? state.violations.length + " (límite " + CONFIG.limiteFueraSeg + " s)" : "Ninguna registrada");
   state.violations.forEach((v,k) => kv("   Salida " + (k+1), fmtTime(v.start) + " - " + fmtDur(v.dur) + " fuera - " + v.motivo));
   if(CONFIG.bloquearPegar) kv("Intentos de pegar", String(state.pasteAttempts || 0));
+  if(CONFIG.protegerCapturas) kv("Intentos de captura", String(state.captureAttempts || 0) + " detectados");
   y += 3;
 
   /* Caja de puntaje */
@@ -1081,7 +1152,7 @@ function printFallback(){
   let h = '<h1>'+esc(CONFIG.titulo)+'</h1><p>'+esc(CONFIG.curso)+'</p>'+
     '<p><b>Estudiante:</b> '+esc(st.nombre)+' · <b>Documento:</b> '+esc(st.documento)+' · <b>Versión:</b> '+esc(state.paper.code)+(st.grupo?' · <b>Grupo:</b> '+esc(st.grupo):'')+'<br>'+
     '<b>Inicio:</b> '+esc(fmtDate(state.startedAt))+' · <b>Entrega:</b> '+esc(fmtDate(state.finishedAt))+'<br><b>Estado:</b> '+esc(R.pdf)+
-    ' · <b>Salidas de pestaña:</b> '+state.violations.length+(CONFIG.bloquearPegar?' · <b>Intentos de pegar:</b> '+(state.pasteAttempts||0):'')+'<br>'+
+    (CONFIG.controlPestana ? ' · <b>Salidas de pestaña:</b> '+state.violations.length : '')+(CONFIG.protegerCapturas ? ' · <b>Intentos de captura:</b> '+(state.captureAttempts||0) : '')+(CONFIG.bloquearPegar?' · <b>Intentos de pegar:</b> '+(state.pasteAttempts||0):'')+'<br>'+
     '<b>Preguntas 1-9:</b> '+(CONFIG.mostrarPuntajeAutomatico? S.auto+' / '+S.autoMax : '____ / '+S.autoMax)+' · <b>Preguntas 10-12:</b> ____ / '+S.openMax+' · <b>Nota final:</b> ______</p>';
   QUESTIONS.forEach((q,i) => {
     const a = state.answers[q.id];
@@ -1133,6 +1204,7 @@ function toast(msg){
 /* =================== ARRANQUE =================== */
 $("#qnav").addEventListener("click", e => { const b = e.target.closest(".qbtn"); if(b) go(Number(b.dataset.i)); });
 $("#btn-finish-side").addEventListener("click", confirmFinish);
+$("#shield").addEventListener("click", () => { window.focus(); shieldOff(); });
 
 function boot(){
   if(location.hash === "#reiniciar"){
@@ -1147,7 +1219,7 @@ function boot(){
   const ref = state.awaySince || state.lastSeen || Date.now();
   const gap = Date.now() - ref;
   startExam();
-  if(examActive() && gap > CONFIG.limiteFueraSeg*1000){
+  if(CONFIG.controlPestana && examActive() && gap > CONFIG.limiteFueraSeg*1000){
     registerViolation(ref, gap, "Cerró, recargó o abandonó la página del parcial");
   }
   if(examActive()){
